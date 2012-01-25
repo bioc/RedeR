@@ -454,7 +454,7 @@ The submission is straightforward: in the Java side, the plugin will be displaye
 The RedeR package is freely available from Bioconductor at \url{http://bioconductor.org/packages/release/bioc/html/RedeR.html}.
 
 \subsubsection*{Developing version}
-As usual with any new package, the developing process tends to be faster than the release schedule of R/Bioconductor. So, at this stage of the project we suggest using RedeR devel version available at \url{http://bioconductor.org/packages/devel/bioc/html/RedeR.html}: please download the \emph{Package Source} (the .tar.gz file!!) and install all dependences by the following sequence of commands in R:
+As usual with any new package, the developing process tends to be faster than the release schedule of R/Bioconductor. So, at this stage of the project we suggest using RedeR devel version available at \url{http://bioconductor.org/packages/devel/bioc/html/RedeR.html}.  Please download the \emph{Package Source} (the .tar.gz file!!) and install all dependences in R:
 
 \begin{scriptsize}
 <<label= Devel version, eval= FALSE>>=
