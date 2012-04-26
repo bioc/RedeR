@@ -14,19 +14,4 @@ citEntry(entry = "Article",
 	sep=" ")
 )
 
-citEntry("Misc",
-   title        = "RedeR: bridging the gap between hierarchical network representation and functional analysis.",
-   author       = "Mauro A. A. Castro, Xin Wang, Florian Markowetz.",
-   organization = "Cancer Research UK - Cambridge Research Institute, Cambridge University.",
-   address      = "Li Ka Shing Centre, Robinson Way, Cambridge, CB2 0RE, UK.",
-   year         = "2011",
-   type 	= "R package",
-   url          = "http://www.markowetzlab.org/software/networks.html",
-   textVersion  = 
-   paste("Castro MAA, Wang X, Markowetz F.", 
-	"RedeR: bridging the gap between hierarchical network representation and functional analysis.",
-	"R package (2011), URL http://www.markowetzlab.org/software/networks.html.",
-	sep=" ")
-   )
-
 
