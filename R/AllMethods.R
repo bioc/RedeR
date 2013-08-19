@@ -153,6 +153,9 @@ setMethod ('updateGraph', 'RedPort',
 setMethod ('dynwin', 'RedPort', 
            function (obj, width=400, height=300, ps=10) {
              if(ping(obj)==0)return(invisible())
+             
+             .Deprecated(new="addGraph/getGraph related methods",old="dynwin")
+             
              width=as.integer(width)
              height=as.integer(height)
              ps=as.integer(ps)
@@ -2020,6 +2023,9 @@ setMethod ('relax', 'RedPort',
 setMethod ('deletePlugin', 'RedPort', 
            function (obj, pluginName) { 
              if(ping(obj)==0)return(invisible())
+             
+             .Deprecated(new="addGraph/getGraph related methods",old="deletePlugin")
+             
              pluginName=as.character(pluginName)      
              invisible (rederexpresspost(obj@uri, 'RedHandler.deletePlugin', pluginName))
            }
@@ -2029,6 +2035,9 @@ setMethod ('deletePlugin', 'RedPort',
 setMethod ('updatePlugins', 'RedPort', 
            function (obj) {   
              if(ping(obj)==0)return(invisible())
+             
+             .Deprecated(new="addGraph/getGraph related methods",old="updatePlugins")
+             
              invisible (rederexpresspost(obj@uri, 'RedHandler.updatePlugins'))
            }
 )    
@@ -2037,6 +2046,10 @@ setMethod ('updatePlugins', 'RedPort',
 setMethod ('submitPlugin', 'RedPort', 
            function (obj, plugin) {
              if(ping(obj)==0)return(invisible())
+             
+             .Deprecated(new="addGraph/getGraph related methods",old="submitPlugin")
+             
+             
              if(class(plugin)!="PluginBuilder"){
                print("Not a 'PluginBuilder' class!")
                return(NULL)     	
