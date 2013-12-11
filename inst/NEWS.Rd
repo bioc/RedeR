@@ -2,7 +2,7 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
-\section{Version 2.0.0}{
+\section{Version 1.10.0}{
   \itemize{
     \item Improved graph attribute settings and interface.
   }
