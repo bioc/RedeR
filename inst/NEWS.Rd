@@ -2,12 +2,17 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
+\section{Version 1.14.0}{
+  \itemize{
+    \item Improved interface compatibility (call-back functions) for some Java platforms.
+  }
+}
 
 \section{Version 1.12.0}{
   \itemize{
     \item Improved interactive layout algorithm.
     \item User interface is simplified, some shortcuts have been added.
-    \item Final release cycle for some deprecated functions (moved to addGraph/getGraph related methods).
+    \item Final release cycle for some deprecated functions, moved to addGraph/getGraph related methods.
     \item Deprecated plugin builder methods have been removed.
   }
 }
