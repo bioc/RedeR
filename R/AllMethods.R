@@ -2136,6 +2136,7 @@ setMethod ('nesthc', 'RedPort',
              nestpack=list()
              nestcount=1
              nid=rep(NA,nn)
+             returnIdList<-list()
              k=1
              for(i in rev(tedges)){			
                nodes=tm$nest[[i]]
@@ -2177,6 +2178,7 @@ setMethod ('nesthc', 'RedPort',
                                                    getpack=TRUE, .callchecks=FALSE)	 
                    nestcount=nestcount+1
                  }
+                 returnIdList[[nid[i]]] <- nodes
                  stats=rbind(stats, data.frame(nid=nid[i],did=i,nest.size=length(nodes),
                                                leafdist=tm$leafdist[i],root.dist=tm$rootdist[i],height=tm$height[i],
                                                nestroot.dist=selec[i],stringsAsFactors=FALSE))	    			
@@ -2241,6 +2243,16 @@ setMethod ('nesthc', 'RedPort',
                  }
                }
              }
+             #return final ids
+             res <- getGraph(obj,type="all", attribs="all")
+             #---
+             idx <- match(names(returnIdList),V(res)$nodeAlias)
+             names(returnIdList) <- V(res)$name[idx]
+             idx <- match(stats$nid,V(res)$nodeAlias)
+             stats$rid <- V(res)$name[idx]
+             stats <- stats[,c("rid","nid","did","nest.size")]
+             colnames(stats) <- c("nestID","nestAlias","hcID","nestSize")
+             invisible(list(nests=returnIdList, nestID=stats))
            }
 )
 

@@ -1,0 +1,320 @@
+---
+title: "RedeR: bridging the gap between hierarchical network representation and functional analysis."
+author: "Mauro AA Castro, Xin Wang, Michael NC Fletcher, Kerstin B Meyer and Florian Markowetz."
+date: "`r doc_date()`"
+package: "`r pkg_ver('RedeR')`"
+bibliography: bibliography.bib
+abstract: <p>RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of modular structures, nested networks and multiple levels of hierarchical associations. Supporting information is available at [Castro et al. (2016)](http://genomebiology.com/2012/13/4/R29).</p>
+output:
+  BiocStyle::html_document:
+    css: custom.css
+vignette: >
+  %\VignetteIndexEntry{"RedeR: hierarchical network representation"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Overview
+
+**RedeR** is an R-based package combined with a Java application for dynamic network visualization and manipulation. It implements a callback engine by using a low-level R-to-Java interface to run complementary methods. In this sense, **RedeR** takes advantage of **R** to run robust statistics, while the R-to-Java interface bridge the gap between network analysis and visualization.
+
+The package is designed to deal with three key challenges in network analysis. Firstly, biological networks are modular and hierarchical, so network visualization needs to take advantage of such structural features. Secondly, network analysis relies on statistical methods, many of which are already available in resources like CRAN or Bioconductor. However, the missing link between advanced visualization and statistical computing makes it hard to take full advantage of R packages for network analysis. Thirdly, in larger networks user input is needed to focus the view of the network on the biologically relevant parts, rather than relying on an automatic layout function (additional information is available at @Castro2012). The design of the software is depicted from **Figure 1**. Complex graphs with many attributes can be transferred from-and-to **R** using `addGraph` and `getGraph` functions.
+
+![title](fig1.png)
+<b>Figure 1.</b> Schematic representation of RedeR calls. In the low-level interface, the Apache server [@Apache] is used to link R to Java.
+
+
+
+# Quick Start
+
+## Main callback methods
+
+The first step is to build the server port, which will be required in all remote procedure calls. By default the constructor `RedPort` should set all details:
+
+```{r label='Set server port', eval=TRUE}
+library(RedeR)
+rdp <- RedPort() 
+``` 
+
+Next, invoke RedeR using the method `calld`:
+
+```{r label='Main call', eval=FALSE}
+calld(rdp)
+``` 
+
+Within an active interface, then the method `addGraph` can easily send R graphs to the application. For example, the following chunk adds an **igraph** object (**Fig. 2**):
+
+```{r label='Add graph (not included)', eval=TRUE, include=FALSE}
+library(igraph)
+g1 <- graph.lattice(c(5,5,5))
+addGraph( rdp, g1, layout.kamada.kawai(g1) )
+``` 
+
+```{r label='Add graph', eval=FALSE, results='hide'}
+library (igraph)
+g1 <- graph.lattice(c(5,5,5))
+addGraph( rdp, g1, layout.kamada.kawai(g1) )
+``` 
+
+
+![title](fig2.png)
+<b>Figure 2.</b> A toy example added to **RedeR** by the `addGraph` function.
+
+<br>
+
+Conversely, RedeR graphs can be transferred to R and wrapped in **igraph** objects:
+
+```{r label='Get graph', eval=TRUE, results='hide'}
+g2 <- getGraph(rdp)
+resetd(rdp)
+``` 
+
+The interface accepts additional graph attributes, as for example edge direction, edge width, edge weight, node shape, node size, node color etc. In order to pass these extensible features the attributes must be provided in a valid syntax (see `getGraph` and `addGraph` specification for additional details).
+
+Another strategy is to wrap graphs into containers and then send it to the Java application. Next, the subgraphs `g3`and `g4` are assigned to different nested structures (**Fig. 3**).
+
+```{r label='Build subgraphs', eval=TRUE, results='hide'}
+g3 <- barabasi.game(10)
+g4 <- barabasi.game(10)
+V(g3)$name<-paste("sn",1:10,sep="")
+V(g4)$name<-paste("sm",1:10,sep="")
+addGraph(rdp, g3, isNest =TRUE, gcoord=c(25,25), gscale=50)
+addGraph(rdp, g4, isNest =TRUE, gcoord=c(75,75), gscale=50)
+``` 
+
+![title](fig3.png)
+<b>Figure 3.</b> Nested graphs in **RedeR** using the command `addGraph`.
+
+<br>
+
+In this case, the subgraphs can be handled apart from each other. For example, the following chunk selects all nodes assigned to the container "N0" and then gets back the subgraph (the selection step can also be done interactively).
+
+```{r label='Get subgraph', eval=TRUE, results='hide'}
+selectNodes(rdp,"N0")
+g5 <- getGraph(rdp, status= "selected")
+resetd(rdp)
+``` 
+
+<i>As a suggestion, try some RedeR features in the Java side (e.g. open samples s2 or s3 in the main panel and enjoy the dynamic layout options!)</i>.
+
+## Interactive work
+
+The next chunk generates a scale-free graph according to the Barabasi-Albert model [@igraph] and sends the graph to **RedeR** without any layout information.
+
+```{r label='Build scale-free graph and send to the app', eval=TRUE, results='hide'}
+g6 <- barabasi.game(500)
+addGraph(rdp, g6, zoom=20)
+``` 
+
+Then using the "relax" options available in the app you can tune the graph layout as presented in **Figure 4**.
+
+```{r label='Start relax', eval=TRUE, results='hide'}
+relax(rdp,p2=400,p5=30,ps=T)
+``` 
+
+![title](fig4.png)
+<b>Figure 4.</b> Scale-free graph according to the Barabasi-Albert model [@igraph].
+
+<br>
+
+In **Figure 5** the same graph is used to exemplify the community structure mapped by the edge-betweenness algorithm (available on both the Java interface and the ** igraph ** package). In **Figure 6** these communities are nested to hidden containers, which are objects of the same class of nodes but with additional behaviors. You can build these containers either using **R** or **Java** functions (see options available in the **clustering** main menu and in the shortcuts of the nested objects, i.e., right-click a container).
+
+![title](fig5.png)
+<b>Figure 5.</b> Subgraphs detected based on edge betweenness.
+
+<br>
+
+![title](fig6.png)
+<b>Figure 6.</b> Subnetworks within hidden containers.
+
+# Workflow illustration
+
+This section provides a sequence of steps that illustrates how users might integrate its own pre-processed data in a given network to visualize subgraphs and nested networks. Please refer to @Castro2012 for more details about the biological background and experimental design of each example.
+
+## Subgraphs
+
+Start the app (i.e. run the 'calld' method), and then get the indicated data frame and interactome:
+
+```{r label='Workflow 1: get a dataframe and an interactome', eval=TRUE, results='hide'}
+data(ER.limma)
+data(hs.inter)
+dt <- ER.limma
+gi <- hs.inter
+``` 
+
+Extract and set attributes to a subgraph represented by genes differentially expressed at a given time point (i.e. logFC from t3-t0 contrast):
+
+```{r label='Workflow 1: extract a subgraph and set attributes to RedeR', eval=TRUE, results='hide'}
+gt3  <- subg(g=gi, dat=dt[dt$degenes.t3!=0,], refcol=1)
+gt3  <- att.setv(g=gt3, from="Symbol", to="nodeAlias")
+gt3  <- att.setv(g=gt3, from="logFC.t3", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)
+``` 
+
+Note that some genes will not be found in the interactome, and that's okay. Extract another subgraph and set its attributes (i.e. logFC from t6-t0 contrast):
+
+```{r label='Workflow 1: extract another subgraph and set attributes to RedeR', eval=TRUE, results='hide'}
+gt6  <- subg(g=gi, dat=dt[dt$degenes.t6!=0,], refcol=1)
+gt6  <- att.setv(g=gt6, from="Symbol", to="nodeAlias")
+gt6  <- att.setv(g=gt6, from="logFC.t6", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)
+``` 
+
+Extract another subgraph and set its attributes (i.e. logFC from t12-t0 contrast):
+
+```{r label='=Workflow 1: extract another subgraph and set attributes to RedeR', eval=TRUE, results='hide'}
+gt12 <- subg(g=gi, dat=dt[dt$degenes.t12!=0,], refcol=1)
+gt12 <- att.setv(g=gt12, from="Symbol", to="nodeAlias")
+gt12 <- att.setv(g=gt12, from="logFC.t12", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)
+``` 
+
+Now add all subgraphs to the app (**Fig.7**):
+
+```{r label='Workflow 1: add subgraphs to the app', eval=TRUE, results='hide'}
+addGraph(rdp, gt3, gcoord=c(10,25), gscale=20, isNest=TRUE, theme='tm1', zoom=30)
+addGraph(rdp, gt6, gcoord=c(20,70), gscale=50, isNest=TRUE, theme='tm1', zoom=30)
+addGraph(rdp, gt12, gcoord=c(70,55), gscale=80, isNest=TRUE, theme='tm1', zoom=30)
+``` 
+
+... and nest overlapping subgraphs (i.e. indicating overlapping time series!):
+
+```{r label='Workflow 1: nest subgraphs', eval=TRUE, results='hide'}
+nestNodes(rdp, nodes=V(gt3)$name, parent="N1", theme='tm2')
+nestNodes(rdp, nodes=V(gt6)$name, parent="N2", theme='tm2')
+nestNodes(rdp, nodes=V(gt3)$name, parent="N4", theme='tm3')
+``` 
+
+To simplify the graph, the `mergeOutEdges` method assigns edges to containers:
+
+```{r label='Workflow 1: assign edges to containers', eval=TRUE, results='hide'}
+mergeOutEdges(rdp)
+``` 
+
+Relax the network:
+
+```{r label='Workflow 1: relax the network', eval=TRUE, results='hide'}
+relax(rdp,50,400)
+``` 
+
+Add color legend (other types are available):
+
+```{r label='Workflow 1: add a color legend (other types are available)', eval=TRUE, results='hide'}
+scl <- gt3$legNodeColor$scale
+leg <- gt3$legNodeColor$legend 
+addLegend.color(rdp, colvec=scl, labvec=leg, title="node color (logFC)")
+``` 
+
+Select a gene:
+
+```{r label='Workflow 1: select a gene', eval=TRUE, results='hide'}
+selectNodes(rdp,"RET")
+``` 
+
+Reset graph:
+
+```{r label='Workflow 1: reset graph', eval=TRUE, results='hide'}
+resetd(rdp)
+``` 
+
+![title](fig7.png)
+<b>Figure 7.</b> Nested subnetworks. This graph shows genes differentially expressed in estrogen-treated MCF-7 cells at 3, 6 and 12 h (relative to 0 h). The insets correspond to the overlap between consecutive time points (adapted from @Castro2012)
+
+
+## Nested networks and clustering
+
+Get the indiated data frame and igraph object:
+
+```{r label='get a dataframe and an igraph object', eval=TRUE, results='hide'}
+data(ER.deg)
+dt <- ER.deg$dat
+sg <- ER.deg$ceg
+``` 
+
+Map the data frame to the graph:
+
+```{r label='Workflow 2: map the dataframe to the graph', eval=TRUE, results='hide'}
+sg <- att.mapv(sg, dat=dt, refcol=1)
+``` 
+
+Set attributes to the graph (i.e. gene symbols and two available numeric data):
+
+```{r label='Workflow 2: set attributes to RedeR', eval=TRUE, results='hide'}
+sg <- att.setv(sg, from="Symbol", to="nodeAlias")
+sg <- att.setv(sg, from="logFC.t3", to="nodeColor", breaks=seq(-1,1,0.2), pal=2)	
+sg <- att.setv(sg, from="ERbdist", to="nodeSize", nquant=10, isrev=TRUE, xlim=c(5,40,1))
+``` 
+
+Add graph to the app (**Fig.8**):
+
+```{r label='Workflow 2: add graph to the app', eval=TRUE, results='hide'}
+addGraph(rdp,sg)
+``` 
+
+Compute a hierarchical clustering using standard R functions:
+
+```{r label='Workflow 2: compute hierarchical clustering', eval=TRUE, results='hide'}
+hc <- hclust(dist(get.adjacency(sg, attr="weight")))
+``` 
+
+Map the `hclust` object onto the network and return corresponding ids (`pvclust` objects are also compatible):
+
+```{r label='Workflow 2: map the hclust object onto the network', eval=TRUE, results='hide'}
+nestID <- nesthc(rdp,hc, cutlevel=3, nmemb=5, cex=0.3, labels=V(sg)$nodeAlias)
+``` 
+
+...at this point nested objects from the network should appear mapped onto a dendrogram. Different levels of the nested structure can be set by the `nesthc` method. Additionally, clustering stability can be assessed by the **pvclust** package, which is already compatible with the interface.
+
+Assign edges to containers:
+
+```{r label='Workflow 2: assign edges to containers', eval=TRUE, results='hide'}
+mergeOutEdges(rdp,nlev=2)
+``` 
+
+Relax the network:
+
+```{r label='Workflow 2: relax the network', eval=TRUE, results='hide'}
+relax(rdp)
+``` 
+
+Add color and size legends:
+
+```{r label='Workflow 2: add color legend', eval=TRUE, results='hide'}
+scl <- sg$legNodeColor$scale
+leg <- sg$legNodeColor$legend
+addLegend.color(rdp, colvec=scl, labvec=leg, title="diff. gene expression (logFC)")
+``` 
+
+```{r label='Workflow 2: add node size legend', eval=TRUE, results='hide'}
+scl <- sg$legNodeSize$scale
+leg <- sg$legNodeSize$legend
+addLegend.size(rdp, sizevec=scl, labvec=leg, title="bd site distance (kb)")
+``` 
+
+Reset graph:
+
+```{r label='Workflow 2: reset graph', eval=TRUE, results='hide'}
+resetd(rdp)
+``` 
+
+![title](fig8.png)
+<b>Figure 8.</b> Hierarchical networks. This graph is obtained by superimposing a dendrogram onto the corresponding co-expression gene network (adapted from @Castro2012).
+
+
+# Installation
+
+## R package
+
+The RedeR package is freely available from the Bioconductor at https://bioconductor.org/packages/RedeR/.
+
+## Java application
+
+The RedeR jar file is already included in the R package and, as usual, to run Java applications your system should have a copy of the JRE (Java Runtime Environment, version >= 6).
+
+# Session information
+
+```{r label='Session information', eval=TRUE, echo=FALSE}
+sessionInfo()
+```
+
+# References
+
+
+

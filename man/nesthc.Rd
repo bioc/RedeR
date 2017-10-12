@@ -42,7 +42,7 @@ Additional arguments:
 }
 
 \value{
-Add/change graph objects and plot corresponding hclust object.
+Add/change graph objects, plot corresponding hclust object, and return corresponding ids. 
 }
 
 \author{Mauro Castro}
@@ -62,7 +62,7 @@ Prior calling this method invoke RedeR application via XML-RPC server (i.e. 'cal
 library(igraph)
 
 g <- gtoy.rm()
-hc<-hclust(dist(get.adjacency(g)))
+hc <- hclust(dist(get.adjacency(g)))
 
 #plot(hc)
 
@@ -71,7 +71,7 @@ hc<-hclust(dist(get.adjacency(g)))
   rdp <- RedPort() 
   calld(rdp)
   addGraph(rdp,g)
-  nesthc(rdp, hc)
+  ids <- nesthc(rdp, hc)
 }  
 }
 
