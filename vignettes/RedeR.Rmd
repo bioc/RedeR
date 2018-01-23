@@ -1,8 +1,8 @@
 ---
 title: "RedeR: bridging the gap between hierarchical network representation and functional analysis."
 author: "Mauro AA Castro, Xin Wang, Michael NC Fletcher, Kerstin B Meyer and Florian Markowetz."
-date: "`r doc_date()`"
-package: "`r pkg_ver('RedeR')`"
+date: "`r BiocStyle::doc_date()`"
+package: "`r BiocStyle::pkg_ver('RedeR')`"
 bibliography: bibliography.bib
 abstract: <p>RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of modular structures, nested networks and multiple levels of hierarchical associations. Supporting information is available at [Castro et al. (2016)](http://genomebiology.com/2012/13/4/R29).</p>
 output:
