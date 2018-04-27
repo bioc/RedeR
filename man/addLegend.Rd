@@ -28,7 +28,7 @@ addLegend.shape(obj, shapevec, ...)
 
 
 \details{     
-Alternatively, colvec, sizevec and shapevec can be igraph objects with legend information previously set by the functions \code{\link[RedeR:att.setv]{att.setv}} and \code{\link[RedeR:att.sete]{att.sete}}.
+Alternatively, colvec, sizevec and shapevec can be igraph objects with legend information previously set by the functions 'att.setv' and 'att.sete'.
  
 Additional arguments: 
 \describe{
@@ -56,11 +56,6 @@ Send legend objects to RedeR app.
 
 \author{Mauro Castro}
 
-\seealso{
-\code{\link[RedeR:addGraph]{addGraph}}
-\code{\link[RedeR:att.setv]{att.setv}}
-\code{\link[RedeR:att.sete]{att.sete}}
-}
 
 \examples{
 # Initialize igraph
