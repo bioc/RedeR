@@ -65,7 +65,8 @@ export(
   att.mapv,
   att.mape,
   subg,
-  cea
+  cea,
+  .rederpost
   )
 
 import(methods)

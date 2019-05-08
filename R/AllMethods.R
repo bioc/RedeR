@@ -1,5 +1,34 @@
 
 #-------------------------------------------------------------------------------
+setMethod ('rederpost', 'RedPort',
+           function (obj, method, ..., gdata=list(...)) { 
+             aXML<-function(method, x){
+               method <- paste(c("<methodName>",method,"</methodName>"), 
+                               collapse = "",sep="")
+               x <- lapply(x,function(arg){
+                 paste(c("<string><![CDATA[",arg,"]]></string>"), collapse="", 
+                       sep="")
+               })
+               x <- lapply(x,function(arg){
+                 paste(c("<value>",arg,"</value>"), collapse="", sep="")
+               })
+               x <- lapply(x,function(arg){
+                 paste(c("<param>",arg,"</param>"), collapse="", sep="")
+               })
+               x <- paste(unlist(x),collapse="", sep="")
+               x <- paste("<params>",x,"</params>",collapse="", sep="")
+               doc <- paste(c("<methodCall>",method,x,"</methodCall>"), 
+                            collapse="", sep="")
+               return(doc)
+             }
+             rdcall <- .simplePost(host=obj@host, port=obj@port,
+                                   datatosend=aXML(method,gdata) )
+             rdcall <- .postParser(rdcall)
+             return(rdcall)
+           }
+)
+
+#-------------------------------------------------------------------------------
 setMethod ('ping', 'RedPort',
            function (obj) { 
              #Check if RedPort connection is available
@@ -88,7 +117,7 @@ setMethod ('calld', 'RedPort',
                }
              } else {
                #(3)Execute 'calld' and update app settings in RedeR preferences:-----               
-               command = paste(cmd, shQuote(filepath), sep=' ')
+               command = paste(cmd, shQuote(filepath), "openshellDcall", obj@port, sep=' ')
                system(command, ignore.stdout = !checkcalls, ignore.stderr = !checkcalls, wait=FALSE) 
              }
 
