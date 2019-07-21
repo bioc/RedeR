@@ -32,7 +32,7 @@ att.mape(g, dat, refcol=c(1,2))
   \item{isrev}{Optional: reversed version of attribute values <logical>. } 
   \item{getleg}{Optional: return legend values <logical>. } 
   \item{dat}{A data frame with the attributes to be mapped to 'g'. } 
-  \item{refcol}{The reference columns in the 'data' object with either node ids (one column <integer>) or edge ids (two columns <vector of two integers>). } 
+  \item{refcol}{The reference column in the 'data' object with either node ids (one column <integer>) or edge ids (two columns <vector of two integers>). } 
   \item{roundleg}{Integer indicating the number of decimal places (round) in the legend of numerical attributes}.
   \item{title}{Optional: legend title}.  
 }

@@ -1,5 +1,34 @@
 
 #-------------------------------------------------------------------------------
+setMethod ('rederpost', 'RedPort',
+           function (obj, method, ..., gdata=list(...)) { 
+             aXML<-function(method, x){
+               method <- paste(c("<methodName>",method,"</methodName>"), 
+                               collapse = "",sep="")
+               x <- lapply(x,function(arg){
+                 paste(c("<string><![CDATA[",arg,"]]></string>"), collapse="", 
+                       sep="")
+               })
+               x <- lapply(x,function(arg){
+                 paste(c("<value>",arg,"</value>"), collapse="", sep="")
+               })
+               x <- lapply(x,function(arg){
+                 paste(c("<param>",arg,"</param>"), collapse="", sep="")
+               })
+               x <- paste(unlist(x),collapse="", sep="")
+               x <- paste("<params>",x,"</params>",collapse="", sep="")
+               doc <- paste(c("<methodCall>",method,x,"</methodCall>"), 
+                            collapse="", sep="")
+               return(doc)
+             }
+             rdcall <- .simplePost(host=obj@host, port=obj@port,
+                                   datatosend=aXML(method,gdata) )
+             rdcall <- .postParser(rdcall)
+             return(rdcall)
+           }
+)
+
+#-------------------------------------------------------------------------------
 setMethod ('ping', 'RedPort',
            function (obj) { 
              #Check if RedPort connection is available
@@ -88,7 +117,7 @@ setMethod ('calld', 'RedPort',
                }
              } else {
                #(3)Execute 'calld' and update app settings in RedeR preferences:-----               
-               command = paste(cmd, shQuote(filepath), sep=' ')
+               command = paste(cmd, shQuote(filepath), "openshellDcall", obj@port, sep=' ')
                system(command, ignore.stdout = !checkcalls, ignore.stderr = !checkcalls, wait=FALSE) 
              }
 
@@ -1959,7 +1988,8 @@ setMethod ('isDynamicsActive', 'RedPort',
 
 #-------------------------------------------------------------------------------
 setMethod ('relax', 'RedPort', 
-           function (obj,p1=100,p2=100,p3=100,p4=100,p5=100,p6=100,p7=10,p8=10,ps=FALSE) {
+           function (obj,p1=100,p2=100,p3=100,p4=100,p5=100,p6=100,p7=10,p8=10,
+                     p9=1, ps=FALSE) {
              if(ping(obj)==0)return(invisible())
              if(!is.numeric(p1) || length(p1)==0)p1=100;p1=p1[1]
              if(!is.numeric(p2) || length(p2)==0)p2=100;p2=p2[1]
@@ -1969,10 +1999,11 @@ setMethod ('relax', 'RedPort',
              if(!is.numeric(p6) || length(p6)==0)p6=100;p6=p6[1]  		
              if(!is.numeric(p7) || length(p7)==0)p7=10;p7=p7[1]
              if(!is.numeric(p8) || length(p8)==0)p8=10;p8=p8[1]
+             if(!is.numeric(p9) || length(p9)==0)p9=1;p9=p9[1]
              if(!is.logical(ps))ps=FALSE
              ps=ifelse(ps[1],1,0)
              return (.rederexpresspost(obj, 'RedHandler.setDynamics',
-                                       p1,p2,p3,p4,p5,p6,p7,p8,ps))
+                                       p1,p2,p3,p4,p5,p6,p7,p8,p9,ps))
            }
 )
 

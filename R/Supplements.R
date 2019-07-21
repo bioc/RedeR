@@ -799,7 +799,17 @@ att.mapv=function(g, dat, refcol=1){
 	if(is.null(nodes) || igraph::vcount(g)!=length(nodes)){
 		stop("NOTE: require 'name' attribute in igraph vertices!")
 	}
-	dc=dat[[refcol[1]]]
+	if(!is.singleInteger(refcol)){
+	  stop("NOTE: 'refcol' should be a single integer value!")
+	}
+	if(refcol<0 || refcol>ncol(dat)){
+	  stop(stop("NOTE: invalid 'refcol' value! it should be a column index in 'data' object!"))
+	}
+	if(refcol==0){
+	  dc=rownames(dat)
+	} else {
+	  dc=dat[[refcol[1]]]
+	}
 	# check attribute data class
 	if(is.factor(dc)){
 		if(class(levels(dc))=="character"){
@@ -814,13 +824,13 @@ att.mapv=function(g, dat, refcol=1){
 	}
 	# check node data class and map attributes to nodes!
 	if(class(nodes)==class(dc)){
-		dat=dat[match(nodes,dc),]
+		dat=dat[match(nodes,dc), , drop=FALSE]
 	} else if(class(nodes)=="character"){
-		dat=dat[match(nodes,as.character(dc)),]
+		dat=dat[match(nodes,as.character(dc)), , drop=FALSE]
 	} else if(class(nodes)=="numeric"){
-		dat=dat[match(nodes,as.numeric(dc)),]
+		dat=dat[match(nodes,as.numeric(dc)), , drop=FALSE]
 	} else if(class(nodes)=="integer"){
-		dat=dat[match(nodes,as.integer(dc)),]
+		dat=dat[match(nodes,as.integer(dc)),, drop=FALSE]
 	} else {
 		stop("NOTE: invalid node names! supported data classes: character, numeric or integer!")
 	}
@@ -851,6 +861,12 @@ att.mape=function(g, dat, refcol=c(1,2)){
     if(!igraph::is.igraph(g)){
         stop("Not an igraph object!")
     }
+  if(!all.integerValues(refcol)){
+    stop("NOTE: invalid 'refcol' value! it should be a two-column index in 'data' object!")
+  }
+  if(any(refcol<1) || any(refcol>ncol(dat))){
+    stop("NOTE: invalid 'refcol' value; it should be a two-column index in 'data' object!")
+  }
 	# get vecs to match!
 	nodes=V(g)$name
 	if(is.null(nodes) || igraph::vcount(g)!=length(nodes)){
@@ -877,7 +893,7 @@ att.mape=function(g, dat, refcol=c(1,2)){
 	if(sum(is.na(idx1))>0){
 		stop("NOTE: one or more edges are not listed in the dataset (i.e. 'refcol' ids)!")
 	}	
-	dat=dat[idx1,]
+	dat=dat[idx1,,drop=FALSE]
 	# check whether resulting dataset size matches nodes!
 	if(nrow(dat)!=nrow(edges)){
 		stop("NOTE: one or more edges are not listed in the dataset (i.e. 'refcol' ids)!")
@@ -1531,5 +1547,36 @@ treemap<-function(hc){
   if(type[1])rdcall <- as.integer(rdcall)
   if(type[2])rdcall <- as.numeric(rdcall)
   return(rdcall)
+}
+
+#-------------------------------------------------------------------
+is.singleNumber <- function(para){
+  (is.integer(para) || is.numeric(para)) && length(para) == 1L && !is.na(para)
+}
+is.singleInteger <- function(para){
+  lg <- (is.integer(para) || is.numeric(para)) && length(para) == 1L && !is.na(para)
+  if (lg) lg <- ( (para+1) / (ceiling(para)+1) ) == 1
+  return(lg)
+}
+is.singleString <- function(para){
+  is.character(para) && length(para) == 1L && !is.na(para)
+}
+is.singleLogical <- function(para){
+  is.logical(para) && length(para) == 1L && !is.na(para)
+}
+all.binaryValues <- function(para){
+  all(para %in% c(0, 1, NA))
+}
+all.integerValues <- function(para){
+  lg <- (all(is.integer(para)) || all(is.numeric(para))) && !any(is.na(para))
+  if (lg) lg <- all(( (para+1) / (ceiling(para)+1) ) == 1)
+  return(lg)
+}
+all.characterValues <- function(para){
+  all(is.character(para)) && !any(is.na(para))
+}
+is.color <- function(x){
+  res <- try(col2rgb(x),silent=TRUE)
+  return(!"try-error"%in%class(res))
 }
 
