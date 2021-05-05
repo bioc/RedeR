@@ -33,20 +33,21 @@ setMethod ('ping', 'RedPort',
            function (obj) { 
              #Check if RedPort connection is available
              rval <- 0L
-             calltest1 <- try(suppressWarnings(
+             connection <- try(suppressWarnings(
                socketConnection(host=obj@host, port=obj@port, blocking=TRUE)
              ), silent = TRUE)
-             calltest1 <- !inherits(calltest1, "try-error")
+             calltest1 <- !inherits(connection, "try-error")
              if(calltest1){
                calltest2 <- try(suppressWarnings(
                  .rederpost(obj,'RedHandler.ping')
-                 ),silent=TRUE)
+                 ), silent=TRUE)
                if(is.numeric(calltest2) && length(calltest2)==1){
                  if(calltest2==1){
                    rval <- 1L
                  }
                }
-               try(suppressWarnings(closeAllConnections()), silent = TRUE)
+               try(suppressWarnings(close(connection)), silent = TRUE)
+               # try(suppressWarnings(closeAllConnections()), silent = TRUE)
              }
              return(rval)
            }
@@ -711,7 +712,7 @@ setMethod ('addGraph', 'RedPort',
              if(is.logical(G(g,"isAssign")) )isAssign=G(g,"isAssign")
              if(is.character(G(g,"nestImage")) )nestImage=G(g,"nestImage")
              if(is.logical(G(g,"isAnchor")) )isAnchor=G(g,"isAnchor")
-             if(is.numeric(G(g,"zoom")) )zoom=G(g,"zoom")
+             if(is.null(zoom) && is.numeric(G(g,"zoom")) )zoom=G(g,"zoom")
              
              #..nested assigments are not straightforward for R-J!!
              if(isAssign && isNest){
@@ -811,8 +812,13 @@ setMethod ('addGraph', 'RedPort',
              }
              
              #Check layout option-----------------------------------------------
+             if(is.null(layout)){
+               vattrbs <- igraph::vertex_attr_names(g)
+               if("coordX"%in%vattrbs) g <- igraph::delete_vertex_attr(g,"coordX")
+               if("coordY"%in%vattrbs) g <- igraph::delete_vertex_attr(g,"coordY")
+             }
              if(!is.null(V(g)$coordX) && !is.null(V(g)$coordY)){
-               if( length(V(g)$coordX)==length(V(g)$coordY) ){
+               if(length(V(g)$coordX)==length(V(g)$coordY) ){
                  layout<-cbind(V(g)$coordX,V(g)$coordY)
                }
              }
@@ -821,7 +827,7 @@ setMethod ('addGraph', 'RedPort',
                  stop("Layout must be provided as matrix!")
                } else if(ncol(layout)!=2){
                  stop("Layout matrix must have 2 cols (i.e. x and y coords)!")
-               } else if( nrow(layout)!=igraph::vcount(g) ) {
+               } else if(nrow(layout)!=igraph::vcount(g) ) {
                  stop("Layout does not match graph vertices: inconsistent row number!")
                } else {
                  s1=!is.numeric(gscale)
@@ -1905,12 +1911,14 @@ setMethod ('selectEdges', 'RedPort',
 
 #-------------------------------------------------------------------------------
 setMethod ('selectNodes', 'RedPort', 
-           function (obj, nodes, nt=NULL) { 
+           function (obj, nodes, anchor=FALSE, nt=NULL) { 
              if(ping(obj)==0)return(invisible())
              nodes=as.character(nodes)
              nt=ifelse(is.null(nt[1]),"",as.character(nt)[1])
+             anchor=ifelse(anchor,"true","false")
              deSelectNodes(obj)#deselect all nodes previously to the call!
-             invisible (.rederexpresspost(obj, 'RedHandler.selectNodes', nodes, nt))
+             invisible (.rederexpresspost(obj, 'RedHandler.selectNodes', 
+                                          nodes, anchor, nt))
            }
 )
 
@@ -2289,8 +2297,10 @@ setMethod ('nesthc', 'RedPort',
 
 #-------------------------------------------------------------------------------
 setMethod ('addLegend.color', 'RedPort', 
-           function (obj, colvec, type="node", labvec=NULL, position=NULL, dxborder=NULL, dyborder=NULL, vertical=NULL, 
-                     ftsize=NULL, title=NULL, dxtitle=NULL, size=NULL, bend=NULL) {
+           function (obj, colvec, type="node", labvec=NULL, position=NULL, 
+                     dxborder=NULL, dyborder=NULL, vertical=NULL, 
+                     ftsize=NULL, title=NULL, dxtitle=NULL, 
+                     size=NULL, bend=NULL) {
              
              if(ping(obj)==0)return(invisible())
              
@@ -2414,11 +2424,19 @@ setMethod ('addLegend.color', 'RedPort',
              bend=as.integer(bend*100)
              bend=min(max(bend,0),100)
              
+             # reverse values for vertical
+             if(vertical){
+               colvec <- rev(colvec)
+               labvec <- rev(labvec)
+             }
+
              # set logical
              vertical=ifelse(vertical,"true","false")
              
-             invisible( .rederexpresspost(obj, 'RedHandler.addLegendColor', colvec, labvec, size, 
-                                         bend, ftsize, title, dxtitle, position, dxborder, dyborder, vertical, type ) )
+             invisible( .rederexpresspost(obj, 'RedHandler.addLegendColor', 
+                                          colvec, labvec, size, bend, ftsize, 
+                                          title, dxtitle, position, dxborder, 
+                                          dyborder, vertical, type ) )
              
            }
 )

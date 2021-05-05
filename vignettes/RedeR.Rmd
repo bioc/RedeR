@@ -166,20 +166,28 @@ gt12 <- att.setv(g=gt12, from="Symbol", to="nodeAlias")
 gt12 <- att.setv(g=gt12, from="logFC.t12", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)
 ``` 
 
+Customize subgraph names:
+
+```{r label='=Workflow 1: customize subgraph names', eval=TRUE, results='hide'}
+gt3$nestAlias <- "3h"
+gt6$nestAlias <- "6h"
+gt12$nestAlias <- "12h"
+``` 
+
 Now add all subgraphs to the app (**Fig.7**):
 
 ```{r label='Workflow 1: add subgraphs to the app', eval=TRUE, results='hide'}
-addGraph(rdp, gt3, gcoord=c(10,25), gscale=20, isNest=TRUE, theme='tm1', zoom=30)
-addGraph(rdp, gt6, gcoord=c(20,70), gscale=50, isNest=TRUE, theme='tm1', zoom=30)
-addGraph(rdp, gt12, gcoord=c(70,55), gscale=80, isNest=TRUE, theme='tm1', zoom=30)
+N0 <- addGraph(rdp, gt3, gcoord=c(10,25), gscale=20, isNest=TRUE, theme='tm1', zoom=30)
+N1 <- addGraph(rdp, gt6, gcoord=c(20,70), gscale=50, isNest=TRUE, theme='tm1', zoom=30)
+N2 <- addGraph(rdp, gt12, gcoord=c(70,55), gscale=80, isNest=TRUE, theme='tm1', zoom=30)
 ``` 
 
 ... and nest overlapping subgraphs (i.e. indicating overlapping time series!):
 
 ```{r label='Workflow 1: nest subgraphs', eval=TRUE, results='hide'}
-nestNodes(rdp, nodes=V(gt3)$name, parent="N1", theme='tm2')
-nestNodes(rdp, nodes=V(gt6)$name, parent="N2", theme='tm2')
-nestNodes(rdp, nodes=V(gt3)$name, parent="N4", theme='tm3')
+N3 <- nestNodes(rdp, nodes=V(gt3)$name, parent=N1, theme='tm2')
+N4 <- nestNodes(rdp, nodes=V(gt6)$name, parent=N2, theme='tm2')
+nestNodes(rdp, nodes=V(gt3)$name, parent=N4, theme='tm3')
 ``` 
 
 To simplify the graph, the `mergeOutEdges` method assigns edges to containers:

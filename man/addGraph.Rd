@@ -21,7 +21,7 @@ addGraph(obj, g, ...)
 \details{       
 Additional arguments: 
 \describe{
-  \item{layout}{Vertex coordinates (graph layout). Accepts matrix with 2 cols (i.e. x and y coords) <matrix>. } 
+  \item{layout}{Vertex coordinates (graph layout). Accepts matrix with 2 cols (i.e. x and y coords) <matrix>. Note, xy coords are not updated when "layout=NULL". This allows graph attributes to be updated, keeping the same layout of an active graph.}
   \item{gscale}{Expansion factor of the graph area related to the app panel area (default = 75) <numeric>. } 
   \item{zoom}{ Sets the zoom scale for the app panel (range: 0.0 to 100.0; default = 100.0) <numerics>. } 
   \item{gcoord}{Sets the graph x,y center. Coords between 0 and 100 are set to the visible area of the app panel (default = c(50,50)) <numeric vector>. } 

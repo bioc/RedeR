@@ -1,62 +1,144 @@
 #-------------------------------------------------------------
 #Simple function to generate random graphs with a modular structure
-gtoy.rm<-function(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05, p3=0.9){
+gtoy.rm <- function(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05, 
+                    p3=0.9, gg=NULL, nn=vcount(gg)){
 	#check args------------------------------------
-	if(!is.numeric(m) || m<1){
+	if(!is.singleNumber(m) || m<1){
 		stop("NOTE: 'm' must be a number > 0!")
 	}
-	m=m[1]
-	if(!is.numeric(nmax)){
+	if(!is.singleNumber(nmax)){
 		stop("NOTE: 'nmax' must be a number > 0!")
 	}
-	nmax=nmax[1]
-	if(!is.numeric(nmin) || nmin>=nmax){
+	if(!is.singleNumber(nmin) || nmin>=nmax){
 		stop("NOTE: 'nmin' must be a number > nmax!")
 	}
-	nmin=nmin[1]
-	if(!is.numeric(p1) || p1>=1 || p1<=0){
+	if(!is.singleNumber(p1) || p1>=1 || p1<=0){
 		stop("NOTE: 'p1' must be numeric (0.0 < p < 1.0)!")
 	}	
-	p1=p1[1]
-	if(!is.numeric(p2) || p2>=1 || p2<=0){
+	if(!is.singleNumber(p2) || p2>=1 || p2<=0){
 		stop("NOTE: 'p2' must be numeric (0.0 < p < 1.0)!")
 	}		
-	p2=p2[1]	
-	if(!is.numeric(p3) || p3>=1 || p3<=0){
+	if(!is.singleNumber(p3) || p3>=1 || p3<=0){
 		stop("NOTE: 'p3' must be numeric (0.0 < p < 1.0)!")
 	}
-	p3= p3[1]
-	nver=function(nmax,p1){sum(runif(nmax)>1-p1)}
-	gg=igraph::graph.empty(n=0, directed=FALSE)
-	mdmap=c()	
-	for(i in 1:m){
-		v=max(nmin,nver(nmax,p1))
-		g=igraph::erdos.renyi.game(n=v, p.or.m=p3, type="gnp", directed=FALSE)
-		gg=igraph::graph.disjoint.union(gg,g)
-		mdmap=c(mdmap,rep(i,v))		
-	}
-	adj=igraph::get.adjacency(gg,sparse=FALSE)
-	adj[,]=0
-	adj[,]=runif(nrow(adj)*ncol(adj))
-	adj[adj<(1-(p2/m))]=0
-	for(i in 1:m){
-		adj[mdmap==i,mdmap==i]=0
-	}
-	adj[adj>0]=1
-	adj=adj+igraph::get.adjacency(gg, sparse=FALSE)
-	gg=igraph::graph.adjacency(adj, mode="undirected",diag=FALSE)
-	gg=igraph::simplify(gg, remove.multiple = TRUE, remove.loops = TRUE)
-	V(gg)$name=paste("n",1:igraph::vcount(gg),sep="")
-	cols=terrain.colors(m)
-	V(gg)$nodeColor=cols[mdmap]
-	V(gg)$module.id=mdmap
+  if(is.null(gg)){
+    par <- c(m=m, nmax=nmax, nmin=nmin, p1=p1, p2=p2, p3=p3)
+    gg <- .simulateModules(par)
+    gg <- .simulateSignal(gg)
+  } else {
+    if(!"gtoy.rm"%in%class(gg))
+      stop("please, provide a 'gg' igraph object 
+            assessed by the 'gtoy.rm' function!")
+    if(!is.singleNumber(nn) || nn<1){
+      stop("NOTE: 'nn' must be a number > 0!")
+    }
+    gg <- .add.random.nodes(gg, nn)
+  }
+	gg <- .setgg(gg)
 	return(gg)
+}
+.add.random.nodes <- function(g1, nn){
+  g2 <- erdos.renyi.game(vcount(g1)+nn, 0.005)
+  #g2 <- barabasi.game(vcount(g1)+nn,directed=FALSE,power=0)
+  V(g2)$name <- paste("n",1:vcount(g2),sep="")
+  g2 <- igraph::union(g1, g2, byname=TRUE)
+  g2 <- igraph::decompose.graph(g2, min.vertices=1,max.comps=1)[[1]]
+  #-- adiciona atividade para os novos nodos
+  simulated.signal <- runif(vcount(g2),1,g2$par["m"])
+  V(g2)$simulated.signal <- simulated.signal
+  V(g2)$simulated.signal[V(g2)$simulated.signal<0] <- 0
+  #-- recupera atividade dos nodos em g1
+  idx <- match(V(g1)$name,V(g2)$name)
+  V(g2)$simulated.signal[idx]<-V(g1)$simulated.signal
+  #-- novos nodos recebem 'module.id = m + 1'
+  V(g2)$module.id <- g2$par["m"] + 1
+  V(g2)$module.id[idx] <- V(g1)$module.id
+  g2$rid <- g2$par["m"] + 1
+  g2$name <- "gtoy: a random modular graph -plus- random nodes"
+  return(g2)
+}
+.simulateModules <- function(par){
+  gg <- igraph::graph.empty(n=0, directed=FALSE)
+  mdmap <- c()
+  nver <- function(nmax,p1){sum(runif(nmax)>1-p1)}
+  for(i in 1:par["m"]){
+    v <- max(par["nmin"],nver(par["nmax"],par["p1"]))
+    g <- igraph::erdos.renyi.game(n=v, p.or.m=par["p3"], type="gnp", 
+                                  directed=FALSE)
+    gg <- igraph::graph.disjoint.union(gg,g)
+    mdmap <- c(mdmap,rep(i,v))		
+  }
+  adj <- igraph::get.adjacency(gg,sparse=FALSE)
+  adj[,] <- 0
+  adj[,] <- runif(nrow(adj)*ncol(adj))
+  adj[adj<(1-(par["p2"]/par["m"]))] <- 0
+  for(i in 1:par["m"]){
+    adj[mdmap==i,mdmap==i] <- 0
+  }
+  adj[adj>0] <- 1
+  adj <- adj+igraph::get.adjacency(gg, sparse=FALSE)
+  gg <- igraph::graph.adjacency(adj, mode="undirected", diag=FALSE)
+  gg <- igraph::simplify(gg, remove.multiple = TRUE, remove.loops = TRUE)
+  gg$par <- par
+  V(gg)$name <- paste("n",1:igraph::vcount(gg),sep="")
+  V(gg)$module.id <- mdmap
+  gg$name <- "gtoy: a random modular graph"
+  return(gg)
+}
+.simulateSignal <- function(gg){
+  mods <- unique(V(gg)$module.id)
+  simulated.signal <- runif(igraph::vcount(gg))
+  for(i in mods){
+    idx <- V(gg)$module.id==i
+    simulated.signal[idx] <- simulated.signal[idx]+rnorm(sum(idx),i*2)
+  }
+  simulated.signal <- simulated.signal - 1
+  simulated.signal[simulated.signal<0] <- 0
+  V(gg)$simulated.signal <- simulated.signal
+  return(gg)
+}
+.setgg <- function(gg){
+  V(gg)$nodeSize <- 25
+  V(gg)$nodeFontSize <- 20
+  V(gg)$nodeLineColor <- "grey"
+  E(gg)$edgeColor <- "grey"
+  E(gg)$edgeWidth <- 2
+  cols <- c("darkblue","blue","cyan","green","yellow","orange","red")
+  breaks <- seq(0, gg$par["m"]+2, by=1)
+  gg <- att.setv(g=gg, from="simulated.signal", to='nodeColor',
+                 cols=cols, breaks=breaks, pal=1)
+  V(gg)$simulated.signal.color <- V(gg)$nodeColor
+  V(gg)$module.color <- terrain.colors(gg$par["m"])[V(gg)$module.id]
+  V(gg)$nodeAlias <- as.character(V(gg)$module.id)
+  class(gg) <- c("gtoy.rm","igraph")
+  if(!is.null(gg$rid)){
+    V(gg)$nodeAlias[V(gg)$module.id==gg$rid] <- ""
+  }
+  return(gg)
+}
+
+#-------------------------------------------------------------------
+# Add RedeR atts to igraph vertices
+att.addv <- function(g, to, value, filter = NULL, index = V(g)){
+  if(!is.null(filter)) {
+    index <- get.vertex.attribute(g, names(filter)) %in% unlist(filter)
+    g <- set_vertex_attr(g, to, value = value, index = index)
+  } else {
+    g <- set_vertex_attr(g, to, value = value, index = index)
+  }
+  return(g)
+}
+
+#-------------------------------------------------------------------
+# Add RedeR atts to igraph vertices
+att.adde <- function(g, to, value, index = E(g)) {
+  set_edge_attr(g, to, value = value, index = index)
 }
 
 #------------------------------------------------------------------------------
-# Set RedeR att. to vertices in igraph objects
+# Set RedeR atts to igraph vertices
 #..todo: patela 2 somente aceita vetor de cores de numero par!!!
-att.setv=function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.col=grey(0.7), 
+att.setv <- function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.col=grey(0.7), 
                   xlim=c(20,100,1), shapes=NULL, breaks=NULL, categvec=NULL, nquant=NULL, 
                   isrev=FALSE, getleg=TRUE, 
                   roundleg=1,title=NULL){
@@ -423,10 +505,9 @@ att.setv=function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.col=
 	return(g)
 }
 
-
 #------------------------------------------------------------------------------
-# set RedeR att. to edges in igraph objects
-att.sete=function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.col=grey(0.7),
+# Set RedeR atts to igraph edges
+att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.col=grey(0.7),
                   xlim=c(20,100,1), shapes=NULL, breaks=NULL, categvec=NULL, nquant=NULL, 
                   isrev=FALSE, getleg=TRUE, roundleg=1,title=NULL){
   #check loaded igraph
@@ -783,8 +864,8 @@ att.sete=function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.col=
 }
 	
 #------------------------------------------------------------------------------
-# map vertices att. to an igraph object
-att.mapv=function(g, dat, refcol=1){
+# Map RedeR atts to igraph vertices
+att.mapv <- function(g, dat, refcol=1){
   #check loaded igraph
   igraph.check()
 	if(!is.data.frame(dat)){
@@ -842,16 +923,30 @@ att.mapv=function(g, dat, refcol=1){
 	for(i in 1:ncol(dat)){
 		if(i!=refcol){
 			att=dat[[i]]
-			if(is.factor(att))att=levels(att)[att]
+			if(is.factor(att)){
+			  lv <- check.numeric(levels(att))
+			  att <- lv[att]
+			}
 			g=igraph::set.vertex.attribute(graph=g, name=names(dat)[i],value=att)
 		}
 	}
 	return(g)
 }
+check.numeric <- function(x){
+  x <- sub("[[:space:]]+$", "", x)
+  x <- sub("^[[:space:]]+", "", x)
+  x[x %in% c("",".", "NA")] <- NA
+  xx <- x[!is.na(x)]
+  if (length(xx)>0){
+    bl <- suppressWarnings(!any(is.na(as.numeric(xx))))
+    if(bl) x <- as.numeric(x)
+  }
+  return(x)
+}
 
 #------------------------------------------------------------------------------
-# map edge att. to an igraph object
-att.mape=function(g, dat, refcol=c(1,2)){
+# Map RedeR atts to igraph edges
+att.mape <- function(g, dat, refcol=c(1,2)){
   #check loaded igraph
   igraph.check()
 	if(!is.data.frame(dat)){
@@ -911,7 +1006,7 @@ att.mape=function(g, dat, refcol=c(1,2)){
 
 #------------------------------------------------------------------------------
 # get subg from an igraph object
-subg=function(g, dat, refcol=1, maincomp=TRUE, connected=TRUE, transdat=TRUE){
+subg <- function(g, dat, refcol=1, maincomp=TRUE, connected=TRUE, transdat=TRUE){
 	if(is.data.frame(dat)){
 		allids=as.character(dat[[refcol[1]]])
 	} else if(is.vector(dat)){
@@ -945,29 +1040,61 @@ subg=function(g, dat, refcol=1, maincomp=TRUE, connected=TRUE, transdat=TRUE){
 
 #Simple function to generate random null distributions for co-expression analysis
 #------------------------------------------------------------------------------
-cea=function(x, sig=0.01, p.adj.method="fdr", cor.method="spearman", nper=1000, plotcea=TRUE,...){
+cea <- function(x, sig=0.01, padj.method="fdr", 
+             cor.method="spearman", nper=1000, 
+             regulators=NULL, plotcea=TRUE,...){
 	if(is.data.frame(x)){
 		x=as.matrix(x)
 	} else {
-		if(!is.matrix(x))stop("NOTE: not a matrix!")
+		if(!is.matrix(x))stop("NOTE: 'x' should be a matrix!")
 	}
+  if( !is.singleNumber(sig) ||  sig<0 || sig>1 )
+    stop("NOTE: 'sig' should be a single numeric value in the interval [0,1]!")
+  if(!is.singleString(padj.method))
+    stop("NOTE: 'padj.method' should be a single character value!")
+  if(!is.singleString(cor.method))
+    stop("NOTE: 'cor.method' should be a single character value!")
+  if(!is.singleInteger(nper) || nper<1)
+    stop("NOTE: 'nper' should be a single positive integer value!")
+  if(!is.null(regulators) && !is.character(regulators))
+    stop("NOTE: 'regulators' should be a character vector!")
+  if(!is.singleLogical(plotcea))
+    stop("NOTE: 'plotcea' should be a single logical value!")
+  if(is.null(rownames(x))){
+    stop("NOTE: matrix 'x' should have rownames!")
+  }
+  if(!is.null(regulators)){
+    if(is.character(regulators)){
+      if(!all(regulators%in%rownames(x))){
+        stop("NOTE: all 'regulators' should be listed in 'x' rownames!")
+      }
+      alltargets <- c(regulators,setdiff(rownames(x),regulators))
+    } else {
+      stop("NOTE: matrix 'x' should have rownames!")
+    }
+  } else {
+    regulators <- alltargets <- rownames(x)
+  }
 	cat("Step 1 ...computing correlation",fill=TRUE)
 	# get correlation matrix
 	x=t(x)
-	corrMt=cor(x, method = cor.method)
-	diag(corrMt)=0	
+	corrMt=cor(x[,regulators],x[,alltargets], method = cor.method)
+	diag(corrMt[regulators,regulators]) <- 0
 	uniqueVec=unique(sort(corrMt))
 	cat("Step 2 ...computing null distribution",fill=TRUE)
 	# builds the null distribution via permutation
 	ctsum=numeric(length(uniqueVec))
 	nulldist=list()
 	pb=txtProgressBar(min=0, max=nper, initial=0, char="=", style=1)
+	nr <- length(regulators)
+	nt <- length(alltargets)
+	nrt <- (nt*nr)-nr
 	for(i in 1:nper){
-		permt=matrix(sample(x),nrow=nrow(x),ncol=ncol(x))
-		permt=cor(permt,method=cor.method)
-		diag(permt)=NA
-		permt=sort(permt)
-        #find intervals
+		permt <- matrix(sample(x),nrow=nrow(x),ncol=ncol(x))
+		permt <- cor(permt[,1:nr],permt[,1:nt],method=cor.method)
+		diag(permt[1:nr,1:nr]) <- NA
+		permt <- sort(permt)
+		#find intervals
 		ct=findInterval(uniqueVec,permt)
 		ctsum=ctsum+ct
 		nl=density(permt)
@@ -978,14 +1105,13 @@ cea=function(x, sig=0.01, p.adj.method="fdr", cor.method="spearman", nper=1000, 
 	#close(pb)
 	cat("\n")
 	cat("Step 3 ...computing probs", fill=TRUE)
-	# prepares matrices to compute probs
-	probs=ctsum/(length(permt)*nper)
-	probs[probs>0.5]=1-probs[probs>0.5]
-	probs=probs[match(as.numeric(corrMt),uniqueVec)]
+	probs <- ctsum/(nrt*nper)
+	probs <- 1 - ( ( probs - 0.5 ) * 2 )^2
+	probs <- probs[match(as.numeric(corrMt),uniqueVec)]
 	cat("Step 4 ...adjusting pvals",fill=TRUE)
-	# adjusts pvals
-	pvalAdj=p.adjust(probs,method=p.adj.method)
-	pvalAdj=matrix(pvalAdj,nrow=nrow(corrMt),ncol=nrow(corrMt))
+	# adjust pvals
+	pvalAdj=p.adjust(probs,method=padj.method)
+	pvalAdj=matrix(pvalAdj,nrow=nrow(corrMt),ncol=ncol(corrMt))
 	# decides on the significance
 	decision=pvalAdj>sig
 	decisionMt=corrMt
@@ -993,7 +1119,6 @@ cea=function(x, sig=0.01, p.adj.method="fdr", cor.method="spearman", nper=1000, 
 	rescea=list(corr.mt=corrMt, decision.mt=decisionMt, pvalue.adj=pvalAdj, null.dist=nulldist)
 	# function to plot decision matx
 	ptcea=function(rescea, ptype=4, bk=0.2, n.breaks=100, plotnull=TRUE, avnull=TRUE, nullcol="black"){
-	  ptype=4
 		if(!is.numeric(bk))bk=0.2
 		bk=min(1,max(0.1,bk))
 		n.breaks=as.integer(n.breaks)
@@ -1136,11 +1261,15 @@ cea=function(x, sig=0.01, p.adj.method="fdr", cor.method="spearman", nper=1000, 
 			xd=decision.hist$breaks		
 			yd=decision.hist$density/maxdata
 			idx=xd>bk;
-			x=c(0,xd[idx]);y=c(0,yd[idx])
-			rect(x[-length(x)], 0, x[-1], y,col='red',border='darkred')
+			if(sum(idx)>0){
+			  x=c(0,xd[idx]);y=c(0,yd[idx])
+			  rect(x[-length(x)], 0, x[-1], y,col='red',border='darkred')
+			}
 			idx=xd<(-bk);
-			x=c(xd[idx],0);y=c(yd[idx],0)	
-			rect(x[-length(x)], 0, x[-1], y,col='blue',border='darkblue')
+			if(sum(idx)>0){
+			  x=c(xd[idx],0);y=c(yd[idx],0)	
+			  rect(x[-length(x)], 0, x[-1], y,col='blue',border='darkblue')
+			}
 			#
 			if(plotnull){	
 				y=null.dist$y/max(null.dist$y)
@@ -1204,7 +1333,7 @@ cea=function(x, sig=0.01, p.adj.method="fdr", cor.method="spearman", nper=1000, 
 }
 ##-----------------------------------------------------------------------------
 #Use default igraph atts if available------------------
-check.igraph.format<-function(g){
+check.igraph.format <- function(g){
   if(!is.null(V(g)$color) && is.null(V(g)$nodeColor) )V(g)$nodeColor=V(g)$color
   if(!is.null(V(g)$frame.color) && is.null(V(g)$nodeLineColor) )V(g)$nodeLineColor=V(g)$frame.color
   if(!is.null(V(g)$size) && is.null(V(g)$nodeSize) )V(g)$nodeSize=V(g)$size*2.5
@@ -1237,7 +1366,7 @@ check.igraph.format<-function(g){
   return(g)
 }
 ##-----------------------------------------------------------------------------
-check.igraph.direction<-function(g){
+check.igraph.direction <- function(g){
   #Check direction and type
   #---set mode if available---#
   arrowType = E(g)$arrowType
@@ -1282,7 +1411,7 @@ check.igraph.direction<-function(g){
 }
 ##-----------------------------------------------------------------------------
 ##format arrowType
-arrowtype4reder<-function(g){
+arrowtype4reder <- function(g){
   #---get edges and mode
   edgeMtx<-igraph::get.adjacency(g, sparse=FALSE,attr=NULL, names=FALSE)
   modeMtx<-igraph::get.adjacency(g, sparse=FALSE,attr="arrowType", names=FALSE)
@@ -1331,7 +1460,7 @@ igraph.check<-function(){
 }
 ##-----------------------------------------------------------------------------
 ##build nested maps from hclust objects
-treemap<-function(hc){
+treemap <- function(hc){
   A=hc$merge
   B=list()
   C=list()

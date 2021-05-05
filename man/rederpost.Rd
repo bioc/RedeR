@@ -1,6 +1,6 @@
-\name{rederpost}
-\alias{rederpost}
-\alias{rederpost,RedPort-method}
+\name{.rederpost}
+\alias{.rederpost}
+\alias{.rederpost,RedPort-method}
 
 \title{This function implements an RPC protocol for RedeR.}
 
@@ -9,7 +9,7 @@ Post to RedeR's handler at the Java side.
 }
 
 \usage{
-rederpost(obj, method, ..., gdata=list(...))
+.rederpost(obj, method, ..., gdata=list(...))
 }
 
 \arguments{

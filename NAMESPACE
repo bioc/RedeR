@@ -61,7 +61,9 @@ export(
   RedPort,
   gtoy.rm,
   att.setv,
+  att.addv,
   att.sete,
+  att.adde,
   att.mapv,
   att.mape,
   subg,
@@ -70,10 +72,14 @@ export(
   )
 
 import(methods)
-importFrom(igraph,is.mutual,delete_vertex_attr,vertex_attr_names,delete.edges, delete_edge_attr,edge_attr_names, V, E,'V<-','E<-')
-importFrom(utils, setTxtProgressBar, txtProgressBar, close.socket, make.socket, read.socket, write.socket)
+importFrom(igraph, is.mutual, delete_vertex_attr, vertex_attr_names, delete.edges) 
+importFrom(igraph, delete_edge_attr, edge_attr_names, set_edge_attr, set_vertex_attr)
+importFrom(igraph, get.vertex.attribute, vcount, decompose.graph, erdos.renyi.game) 
+importFrom(igraph, union, V, E,'V<-','E<-')
+importFrom(utils, setTxtProgressBar, txtProgressBar, close.socket, make.socket) 
+importFrom(utils, read.socket, write.socket)
 importFrom(graphics, hist, legend, lines, par, plot, polygon, rect, text)
 importFrom(grDevices, colorRampPalette, grey, terrain.colors, col2rgb)
-importFrom(stats, cor, density, p.adjust, quantile, runif)
+importFrom(stats, cor, density, p.adjust, quantile, runif, rnorm)
 
 

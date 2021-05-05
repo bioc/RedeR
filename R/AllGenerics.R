@@ -89,7 +89,7 @@ setGeneric ('addEdgeBetweenContainers', signature='obj',
 #-----------------------------------------------------------------------------------------
 setGeneric ('selectEdges', signature='obj', function (obj, nodeA, nodeB)    
   standardGeneric ('selectEdges'), package='RedeR')
-setGeneric ('selectNodes', signature='obj', function (obj, nodes, nt=NULL)           
+setGeneric ('selectNodes', signature='obj', function (obj, nodes, anchor=FALSE, nt=NULL)         
   standardGeneric ('selectNodes'), package='RedeR')
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
