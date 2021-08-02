@@ -4,12 +4,12 @@
 \title{Random graphs and modules.}
 
 \description{
-A very simple function to generate random graphs with modular structures. 
+A simple function to simulate random graphs with modular structures.
 }
 
 \usage{
-gtoy.rm(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05, p3=0.9, 
-gg=NULL, nn=vcount(gg))
+gtoy.rm(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7, gg=NULL, 
+nn=vcount(gg), noise.range=c(0.2, 0.6), plot=FALSE, fname=NULL)
 }
 
 \arguments{
@@ -25,8 +25,21 @@ gg=NULL, nn=vcount(gg))
   Erdos-Renyi model (see \code{\link[igraph:erdos.renyi.game]{erdos.renyi.game}}).
   }
   \item{nn}{
-  When 'gg' is provided, this option defines the number of 
-  new vertices to add to the 'gg' object.
+  When 'gg' is provided, this option defines the number of new vertices 
+  to add to the 'gg' object.
+  }
+  \item{noise.range}{
+  When 'gg' is provided, this option sets the upper and lower
+  bounds of a uniform random distribution assigned to the random graph 
+  by the \code{\link[stats:runif]{runif}} function, which is applied with
+  default settings.
+  }
+  \item{plot}{ 
+  A logical value. This option generates a boxplot for the simulated signal 
+  generated for each graph module.
+  }
+  \item{fname}{
+  A string. The name of the pdf file in which the plot will be saved.
   }
 }
 

@@ -97,12 +97,7 @@ setMethod ('calld', 'RedPort',
              if(filepath=="default"){
                filepath = system.file(package = "RedeR", "java/reder_v2.jar")
              }
-             
-             if(Sys.info()[['sysname']]=="Darwin"){
-               cmd="open -n"
-             } else {
-               cmd="java -jar"
-             }
+             cmd="java -jar"
              
              #(2) check calld
              if(checkcalls){
@@ -110,11 +105,11 @@ setMethod ('calld', 'RedPort',
                system("java -version")
                cat("(2) checking interface...")
                command = paste(cmd, shQuote(filepath), sep=' ')
-               res<-system(command, ignore.stdout = FALSE, ignore.stderr = FALSE, wait=FALSE)
+               res <- system(command, ignore.stdout = FALSE, ignore.stderr = FALSE, wait=FALSE)
                if(res==0){
-                 cat("\nRestart the software with default options, otherwise please report \nany eventual error message to us <mauro.a.castro at gmail.com>.\n")
+                 cat("\nRestart the software with default options, otherwise please report \nany eventual error message to <mauro.a.castro at gmail.com>.\n")
                } else {
-                 message("\nPlease report any eventual error message to us <mauro.a.castro at gmail.com>")
+                 message("\nPlease report any eventual error message to <mauro.a.castro at gmail.com>")
                }
              } else {
                #(3)Execute 'calld' and update app settings in RedeR preferences:-----               
@@ -153,11 +148,95 @@ setMethod ('calld', 'RedPort',
 )            
 #-------------------------------------------------------------------------------
 setMethod ('updateGraph', 'RedPort', 
-           function (obj) { 
+           function (obj, g=NULL) {
              if(ping(obj)==0)return(invisible())
              invisible (.rederpost(obj, 'RedHandler.updateGraph'))
+             if(!is.null(g)){
+               if(!igraph::is.igraph(g))stop("'g' should be an igraph object!")
+               gcls <- class(g)
+               invisible(.rederpost(obj,'RedHandler.stopDynamics'))
+               invisible(.rederpost(obj,'RedHandler.lockDragAndZoom'))
+               gg <- getGraph(obj, attribs="plain")
+               invisible(.rederpost(obj,'RedHandler.unLockDragAndZoom'))
+               if(!all(V(gg)$name%in%V(g)$name)){
+                 tp1 <- "All nodes in the RedeR interface should be "
+                 tp2 <- "available in the 'g' object. "
+                 tp3 <- "In order to get all graph in the RedeR interface, "
+                 tp4 <- "please use the 'getGraph' function."
+                 stop(tp1,tp2,tp3,tp4)
+               }
+               if(!all(V(g)$name%in%V(gg)$name)){
+                 tp1 <- "Note: the 'updateGraph' function aims to update node coordinates "
+                 tp2 <- "in the 'g' object, using graph coordinates in the RedeR interface!"
+                 warning(tp1,tp2)
+               }
+               #--- delete vertices
+               nodes <- intersect(V(g)$name,V(gg)$name)
+               idx <- which(!V(g)$name%in%nodes)
+               if(length(idx)>0){
+                 message("Deleting ",length(idx), " vertices from 'g'!")
+                 g <- delete_vertices(g, v=which(!V(g)$name%in%nodes))
+                 gg <- delete_vertices(gg, v=which(!V(gg)$name%in%nodes))
+               }
+               #--- update coords
+               message("Updating 'coordX' and 'coordY' of 'g' vertices!")
+               vg <- .get_vlist(g)
+               vgg <- .get_vlist(gg)
+               vgg <- vgg[V(g)$name,]
+               V(g)$coordX <- vgg$coordX
+               V(g)$coordY <- vgg$coordY
+               #--- delete edges
+               egg <- .get_elist(gg)
+               eg <- .get_elist(g)
+               idx <- eg$ID12%in%egg$ID12|eg$ID12%in%egg$ID21
+               idx <- which(!idx)
+               if(length(idx)>0){
+                 message("Deleting ",length(idx), " edges from 'g'!")
+                 g <- delete_edges(g, idx)
+               }
+               #--- add edges
+               idx <- egg$ID12%in%eg$ID12|egg$ID12%in%eg$ID21
+               idx <- which(!idx)
+               if(length(idx)>0){
+                 message("Adding ",length(idx), " edges in 'g'!")
+                 egg <- egg[idx,,drop=F]
+                 idx1 <- match(egg$Node1,V(g)$name)
+                 idx2 <- match(egg$Node2,V(g)$name)
+                 edgeseq <- as.numeric(rbind(idx1,idx2))
+                 g <- add_edges(g, edgeseq)
+                 if(!is.null(E(g)$edgeWidth)){
+                   E(g)$edgeWidth[is.na(E(g)$edgeWidth)] <- E(g)$edgeWidth[1]
+                 }
+                 if(!is.null(E(g)$edgeColor)){
+                   E(g)$edgeColor[is.na(E(g)$edgeColor)] <- E(g)$edgeColor[1]
+                 }
+               }
+               #--- update class
+               g$zoom <- gg$zoom
+               class(g) <- gcls
+               return(g)
+             }
            }
 )
+.get_vlist <- function(g){
+  vl <- data.frame(Node=V(g)$name, stringsAsFactors = FALSE)
+  rownames(vl) <- vl$Node
+  b1 <- all(c("coordX","coordY")%in%vertex_attr_names(g))
+  if(b1){
+    vl <- data.frame(vl, coordX=V(g)$coordX,
+                     coordY=V(g)$coordY, 
+                     stringsAsFactors = FALSE)
+  }
+  return(vl)
+}
+.get_elist <- function(g){
+  el <- data.frame(get.edgelist(g), stringsAsFactors = FALSE)
+  colnames(el) <- c("Node1","Node2")
+  el$ID12 <- paste0(el$Node1,"|",el$Node2)
+  el$ID21 <- paste0(el$Node2,"|",el$Node1)
+  return(el)
+}
+
 
 #Get RedeR graph via RedeR methods and wrap it up into igraph objects  
 #-------------------------------------------------------------------------------
@@ -192,24 +271,25 @@ setMethod ('getGraph', 'RedPort',
              if(attribs=="minimal"){
                return(g) 
              } else if(attribs=="plain"){
-               nodeX     = .getNodeX(obj, status, type )
-               nodeY     = .getNodeY(obj, status, type )
-               g         = igraph::set.vertex.attribute(g, "coordX", value=nodeX)
-               g         = igraph::set.vertex.attribute(g, "coordY", value=nodeY)
+               nodeX = .getNodeX(obj, status, type )
+               nodeY = .getNodeY(obj, status, type )
+               g = igraph::set.vertex.attribute(g, "coordX", value=nodeX)
+               g = igraph::set.vertex.attribute(g, "coordY", value=nodeY)
+               g$zoom = .rederpost(obj,'RedHandler.getZoom')
                return(g)
              } else if(attribs=="all"){
-               nodeAlias      = .getNodeAliases(obj, status, type ) 
-               nodeBend       = .getNodeBend(obj, status, type )     
-               nodeX          = .getNodeX(obj, status, type )
-               nodeY          = .getNodeY(obj, status, type )
-               nodeSize       = .getNodeSize(obj, status, type )
-               nodeShape      = .getNodeShape(obj, status, type )
-               nodeColor      = .getNodeColor(obj, status, type )
+               nodeAlias = .getNodeAliases(obj, status, type ) 
+               nodeBend  = .getNodeBend(obj, status, type )     
+               nodeX     = .getNodeX(obj, status, type )
+               nodeY     = .getNodeY(obj, status, type )
+               nodeSize  = .getNodeSize(obj, status, type )
+               nodeShape = .getNodeShape(obj, status, type )
+               nodeColor = .getNodeColor(obj, status, type )
                nodeWeight     = .getNodeWeight(obj, status, type )
                nodeLineWidth  = .getNodeLineWidth(obj, status, type )
                nodeLineColor  = .getNodeLineColor(obj, status, type ) 
                nodeFontSize   = .getNodeFontSize(obj, status, type )
-               nodeFontColor  = .getNodeFontColor(obj, status, type )        
+               nodeFontColor  = .getNodeFontColor(obj, status, type )
                g     = igraph::set.vertex.attribute(g, "nodeAlias",  value=nodeAlias)
                g     = igraph::set.vertex.attribute(g, "nodeBend",   value=nodeBend)
                g     = igraph::set.vertex.attribute(g, "coordX",   value=nodeX)
@@ -222,6 +302,7 @@ setMethod ('getGraph', 'RedPort',
                g     = igraph::set.vertex.attribute(g, "nodeLineColor",  value=nodeLineColor)
                g     = igraph::set.vertex.attribute(g, "nodeFontSize",   value=nodeFontSize)
                g     = igraph::set.vertex.attribute(g, "nodeFontColor",  value=nodeFontColor) 
+               g$zoom <- .rederpost(obj,'RedHandler.getZoom')
                #..get edge attrs. if present!
                if(!is.null(edges)){
                  arrowDirection = .getArrowDirection (obj, status, type )  
@@ -638,9 +719,9 @@ setMethod ('addSeries', 'RedPort',
 #-------------------------------------------------------------------------------
 setMethod ('addGraph', 'RedPort', 
            function (obj, g, layout=igraph::layout.random(g), gscale=75, gcoord=c(50,50), 
-                     zoom=NULL, isNest=FALSE, nestImage='plain', isAnchor=TRUE, isAssign=FALSE, 
-                     loadEdges=TRUE, parent=NULL, minimal=FALSE, theme='tm0', igraphatt=TRUE, 
-                     ntransform=FALSE, .callchecks=TRUE) {
+                     zoom=NULL, gzoom=NULL, isNest=FALSE, nestImage='plain', isAnchor=TRUE, 
+                     isAssign=FALSE, loadEdges=TRUE, parent=NULL, minimal=FALSE, theme='tm0', 
+                     igraphatt=TRUE, ntransform=FALSE, .callchecks=TRUE) {
              #Callcheck
              if(.callchecks)if(ping(obj)==0)return(invisible())
              
@@ -648,7 +729,8 @@ setMethod ('addGraph', 'RedPort',
              igraph.check()
              
              #Check igraph object-----------------------------------------------
-             if(!igraph::is.igraph(g))stop("Not an igraph object!")
+             if(!igraph::is.igraph(g))
+               stop("'g' should be an igraph object!")
              
              #Check igraph direction
              if(igraph::is.directed(g))g<-check.igraph.direction(g)
@@ -713,7 +795,9 @@ setMethod ('addGraph', 'RedPort',
              if(is.character(G(g,"nestImage")) )nestImage=G(g,"nestImage")
              if(is.logical(G(g,"isAnchor")) )isAnchor=G(g,"isAnchor")
              if(is.null(zoom) && is.numeric(G(g,"zoom")) )zoom=G(g,"zoom")
-             
+             #---gzoom overrides zoom and has effect only on objects
+             if(!is.null(gzoom))zoom <- gzoom
+               
              #..nested assigments are not straightforward for R-J!!
              if(isAssign && isNest){
                temp=V(g)$name
@@ -792,10 +876,6 @@ setMethod ('addGraph', 'RedPort',
                stop("gcoord must be a numeric vector of length=2 (i.e. coords to the graph center)!")
              }
              
-             #PS. the following methods must be used only in low-level calls!
-             
-             message('*** Uploading graph to RedeR server ***')
-             
              #Set zoom if available
              if(!is.null(zoom)){ 
                zoom=zoom[1]
@@ -810,6 +890,10 @@ setMethod ('addGraph', 'RedPort',
              } else {
                zoom=100 # somente usado em 'themes'
              }
+             
+             #PS. the following methods must be used only in low-level calls!
+             
+             message('*** Uploading graph to RedeR server ***')
              
              #Check layout option-----------------------------------------------
              if(is.null(layout)){
@@ -829,6 +913,9 @@ setMethod ('addGraph', 'RedPort',
                  stop("Layout matrix must have 2 cols (i.e. x and y coords)!")
                } else if(nrow(layout)!=igraph::vcount(g) ) {
                  stop("Layout does not match graph vertices: inconsistent row number!")
+               } else if(!is.null(g$zoom)){
+                 V(g)$coordX=layout[,1]
+                 V(g)$coordY=layout[,2]
                } else {
                  s1=!is.numeric(gscale)
                  s2=is.null(gscale)
@@ -836,6 +923,9 @@ setMethod ('addGraph', 'RedPort',
                  if(s1 || s2 || s3){
                    warning("NOTE: attribute 'gscale' is not set properly; must be <numeric> of length=1!")
                    gscale = 75
+                 }
+                 if(!is.null(zoom)&&is.null(gzoom)){
+                   gscale <- gscale*(zoom[1]/100)
                  }
                  pScale= .rederpost(obj,'RedHandler.getPanelScale')
                  pScale=as.numeric(pScale)
@@ -845,7 +935,16 @@ setMethod ('addGraph', 'RedPort',
                    pScale=500
                  }
                  if(isNest)pScale=pScale/sqrt(2)
-                 layout=igraph::layout.norm(layout,xmin=0, xmax=pScale, ymin=0, ymax=pScale)
+                 l1 <- diff(range(layout[,1]))
+                 l2 <- diff(range(layout[,2]))
+                 if(l1>l2){
+                   l2 <- l2/l1*pScale
+                   l1 <- pScale
+                 } else {
+                   l1 <- l1/l2*pScale
+                   l2 <- pScale
+                   }
+                 layout=igraph::layout.norm(layout,xmin=0, xmax=l1, ymin=0, ymax=l2)
                  V(g)$coordX=layout[,1]
                  V(g)$coordY=layout[,2]
                }       
@@ -938,8 +1037,7 @@ setMethod ('addGraph', 'RedPort',
                  warning("NOTE: node coords. must be provided as numerics!")
                  coordX=as.numeric(c(10,10))
                  coordY=as.numeric(c(10,10,10))
-               }
-               else if(sum(is.na(coordX))>0 || sum(is.na(coordY))>0 ){
+               } else if(sum(is.na(coordX))>0 || sum(is.na(coordY))>0 ){
                  warning("NOTE: invalid node coords. declaration: 'NA' found'!")
                  coordX=as.numeric(c(10,10))
                  coordY=as.numeric(c(10,10,10))

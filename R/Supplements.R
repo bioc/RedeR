@@ -1,61 +1,93 @@
 #-------------------------------------------------------------
 #Simple function to generate random graphs with a modular structure
-gtoy.rm <- function(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05, 
-                    p3=0.9, gg=NULL, nn=vcount(gg)){
+gtoy.rm <- function(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7, 
+                    gg=NULL, nn=vcount(gg), noise.range=c(0.2, 0.6), 
+                    plot=FALSE, fname=NULL){
 	#check args------------------------------------
-	if(!is.singleNumber(m) || m<1){
-		stop("NOTE: 'm' must be a number > 0!")
+	if(!is.singleInteger(m) || m<1){
+		stop("NOTE: 'm' must be an integer value > 0!")
 	}
-	if(!is.singleNumber(nmax)){
-		stop("NOTE: 'nmax' must be a number > 0!")
+	if(!is.singleInteger(nmax)){
+		stop("NOTE: 'nmax' must be an integer value > 0!")
 	}
-	if(!is.singleNumber(nmin) || nmin>=nmax){
-		stop("NOTE: 'nmin' must be a number > nmax!")
+	if(!is.singleInteger(nmin) || nmin>=nmax){
+		stop("NOTE: 'nmin' must be an integer value > nmax!")
 	}
 	if(!is.singleNumber(p1) || p1>=1 || p1<=0){
 		stop("NOTE: 'p1' must be numeric (0.0 < p < 1.0)!")
 	}	
 	if(!is.singleNumber(p2) || p2>=1 || p2<=0){
-		stop("NOTE: 'p2' must be numeric (0.0 < p < 1.0)!")
+		stop("NOTE: 'p2' must be a numeric value (0.0 < p < 1.0)!")
 	}		
 	if(!is.singleNumber(p3) || p3>=1 || p3<=0){
-		stop("NOTE: 'p3' must be numeric (0.0 < p < 1.0)!")
+		stop("NOTE: 'p3' must be a numeric value (0.0 < p < 1.0)!")
 	}
   if(is.null(gg)){
     par <- c(m=m, nmax=nmax, nmin=nmin, p1=p1, p2=p2, p3=p3)
     gg <- .simulateModules(par)
     gg <- .simulateSignal(gg)
+    gg <- .setgg(gg)
+    if(plot){
+      .plot.signal(gg, fname, isNew=TRUE)
+    }
   } else {
     if(!"gtoy.rm"%in%class(gg))
       stop("please, provide a 'gg' igraph object 
             assessed by the 'gtoy.rm' function!")
-    if(!is.singleNumber(nn) || nn<1){
-      stop("NOTE: 'nn' must be a number > 0!")
+    if(!is.singleInteger(nn) || nn<1){
+      stop("NOTE: 'nn' must be an integer value > 0!")
     }
+    if(!is.numeric(noise.range) || length(noise.range)!=2){
+      stop("NOTE: 'noise.range' must be a numeric vector of length=2!")
+    }
+    noise.range <- sort(noise.range)
+    if(noise.range[1]<0 | noise.range[2]>1){
+      stop("NOTE: 'noise.range' must be in [0,1]!")
+    }
+    gg$noise.range <- noise.range
     gg <- .add.random.nodes(gg, nn)
+    gg <- .setgg(gg)
+    if(plot){
+      .plot.signal(gg, fname, isNew=FALSE)
+    }
   }
-	gg <- .setgg(gg)
 	return(gg)
 }
-.add.random.nodes <- function(g1, nn){
-  g2 <- erdos.renyi.game(vcount(g1)+nn, 0.005)
-  #g2 <- barabasi.game(vcount(g1)+nn,directed=FALSE,power=0)
-  V(g2)$name <- paste("n",1:vcount(g2),sep="")
-  g2 <- igraph::union(g1, g2, byname=TRUE)
-  g2 <- igraph::decompose.graph(g2, min.vertices=1,max.comps=1)[[1]]
-  #-- adiciona atividade para os novos nodos
-  simulated.signal <- runif(vcount(g2),1,g2$par["m"])
-  V(g2)$simulated.signal <- simulated.signal
-  V(g2)$simulated.signal[V(g2)$simulated.signal<0] <- 0
-  #-- recupera atividade dos nodos em g1
-  idx <- match(V(g1)$name,V(g2)$name)
-  V(g2)$simulated.signal[idx]<-V(g1)$simulated.signal
-  #-- novos nodos recebem 'module.id = m + 1'
-  V(g2)$module.id <- g2$par["m"] + 1
-  V(g2)$module.id[idx] <- V(g1)$module.id
-  g2$rid <- g2$par["m"] + 1
-  g2$name <- "gtoy: a random modular graph -plus- random nodes"
-  return(g2)
+.plot.signal <- function(gg, fname, isNew=TRUE){
+  dt <- data.frame(nodeId=V(gg)$name,
+                  simulated.signal=V(gg)$simulated.signal,
+                  moduleId=V(gg)$module.id)
+  if(!is.null(fname))
+    pdf(file=paste0(fname,".pdf"), width=5, height=5)
+  m <- gg$par["m"]
+  moduleId <- sort(unique(dt$moduleId))
+  nm <- length(moduleId)
+  cols <- rep("grey90", nm)
+  border <- rep("black", nm)
+  names(moduleId) <- paste0("M", moduleId)
+  if(!isNew){
+    lb <- gg$noise.range[1]
+    ub <- gg$noise.range[2]
+    moduleId <- moduleId[-nm]
+    cols[nm] <- "white"
+    border[nm] <- "red"
+  }
+  xlim <- c(0.5,m+1.5)
+  ylim <- c(0,gg$max)
+  plot(0, xlim=xlim, ylim=ylim, ylab="", xlab="", type="n", axes=FALSE)
+  if(!isNew)abline(ub, 0, lty=2, col="red", lw=1.2)
+  if(!isNew)abline(lb, 0, lty=2, col="red", lw=1.2)
+  boxplot(simulated.signal~moduleId,data=dt, col=cols, 
+          border=border, ylab="", xlab="", add=TRUE, axes=FALSE)
+  axis(1, las=1, labels = names(moduleId), at=moduleId, 
+       padj = 1, mgp=c(1,0.1,0), tcl=-0.3, lwd=2.2, cex.axis=1.2)
+  axis(2, las=2, mgp=c(0,0.6,0), tcl=-0.3, lwd=2.2, cex.axis=1.2)
+  mtext(text="Simulated signal", side=2, line=2.2, cex=1.3)
+  mtext(text="Simulated modules", side=1, line=2.2, at=(m+1)/2, cex=1.3)
+  if(!isNew)text(x=m+1, y=ub+0.03, "upper bound", cex=0.7, col="red", adj=0.5)
+  if(!isNew)text(x=m+0.5, y=(ub+lb)/2, "random\nnodes", cex=0.8, col="red", adj=c(1,0.5))
+  if(!isNew)text(x=m+1, y=lb-0.03, "lower bound", cex=0.7, col="red", adj=0.5)
+  if(!is.null(fname)) dev.off()
 }
 .simulateModules <- function(par){
   gg <- igraph::graph.empty(n=0, directed=FALSE)
@@ -88,14 +120,41 @@ gtoy.rm <- function(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05,
 .simulateSignal <- function(gg){
   mods <- unique(V(gg)$module.id)
   simulated.signal <- runif(igraph::vcount(gg))
+  sgdiff <- 2
   for(i in mods){
     idx <- V(gg)$module.id==i
-    simulated.signal[idx] <- simulated.signal[idx]+rnorm(sum(idx),i*2)
+    md <- 1 + i*sgdiff-(sgdiff-1)
+    simulated.signal[idx] <- simulated.signal[idx]+rnorm(sum(idx), md)
   }
   simulated.signal <- simulated.signal - 1
-  simulated.signal[simulated.signal<0] <- 0
-  V(gg)$simulated.signal <- simulated.signal
+  simulated.signal <- simulated.signal-min(simulated.signal)
+  simulated.signal <- simulated.signal/max(simulated.signal)
+  V(gg)$coordZ <- V(gg)$simulated.signal <- simulated.signal
+  gg$max <- ceiling(max(V(gg)$simulated.signal))
   return(gg)
+}
+.add.random.nodes <- function(g1, nn){
+  lb <- g1$noise.range[1]
+  ub <- g1$noise.range[2]
+  m <- g1$par["m"]
+  g2 <- erdos.renyi.game(vcount(g1)+nn, 0.005)
+  #g2 <- barabasi.game(vcount(g1)+nn,directed=FALSE,power=0)
+  V(g2)$name <- paste("n",1:vcount(g2),sep="")
+  g2 <- igraph::union(g1, g2, byname=TRUE)
+  g2 <- igraph::decompose.graph(g2, min.vertices=1,max.comps=1)[[1]]
+  #-- adiciona atividade para os novos nodos
+  simulated.signal <- runif(vcount(g2), lb, ub)
+  V(g2)$simulated.signal <- simulated.signal
+  #-- recupera atividade dos nodos em g1
+  idx <- match(V(g1)$name,V(g2)$name)
+  V(g2)$simulated.signal[idx] <- V(g1)$simulated.signal
+  V(g2)$coordZ <- V(g2)$simulated.signal
+  #-- novos nodos recebem 'module.id = m + 1'
+  V(g2)$module.id <- m + 1
+  V(g2)$module.id[idx] <- V(g1)$module.id
+  g2$rid <- m + 1
+  g2$name <- "gtoy: a random modular graph -plus- random nodes"
+  return(g2)
 }
 .setgg <- function(gg){
   V(gg)$nodeSize <- 25
@@ -103,8 +162,8 @@ gtoy.rm <- function(m=3, nmax=30, nmin=3, p1=0.5, p2=0.05,
   V(gg)$nodeLineColor <- "grey"
   E(gg)$edgeColor <- "grey"
   E(gg)$edgeWidth <- 2
-  cols <- c("darkblue","blue","cyan","green","yellow","orange","red")
-  breaks <- seq(0, gg$par["m"]+2, by=1)
+  cols <- c("darkblue","blue","cyan","green","yellow","orange","red","darkred")
+  breaks <- pretty(V(gg)$simulated.signal, n = 9)
   gg <- att.setv(g=gg, from="simulated.signal", to='nodeColor',
                  cols=cols, breaks=breaks, pal=1)
   V(gg)$simulated.signal.color <- V(gg)$nodeColor
@@ -869,27 +928,34 @@ att.mapv <- function(g, dat, refcol=1){
   #check loaded igraph
   igraph.check()
 	if(!is.data.frame(dat)){
-		stop("not a data frame!")
+		stop("'dat' should be a data frame!")
 	}
 	# check igraph object and main args---------------------------------
 	if(!igraph::is.igraph(g)){
-	  stop("Not an igraph object!")
+	  stop("'g' should be an igraph object!")
 	}
 	# get vecs to match!
 	nodes=V(g)$name
 	if(is.null(nodes) || igraph::vcount(g)!=length(nodes)){
 		stop("NOTE: require 'name' attribute in igraph vertices!")
 	}
-	if(!is.singleInteger(refcol)){
-	  stop("NOTE: 'refcol' should be a single integer value!")
-	}
-	if(refcol<0 || refcol>ncol(dat)){
-	  stop(stop("NOTE: invalid 'refcol' value! it should be a column index in 'data' object!"))
-	}
-	if(refcol==0){
-	  dc=rownames(dat)
+	if(is.singleInteger(refcol)){
+	  if(refcol<0 || refcol>ncol(dat)){
+	    stop("NOTE: invalid 'refcol' value! it should be a column index in 'data' object!")
+	  }
+	  if(refcol==0){
+	    dc=rownames(dat)
+	  } else {
+	    dc=dat[[refcol[1]]]
+	  }
+	} else if(is.singleString(refcol)){
+	  if(!refcol%in%colnames(dat)){
+	    stop("NOTE: invalid 'refcol' value! it should be a column index in 'data' object!")
+	  }
+	  refcol <- which(colnames(dat)==refcol)[1]
+	  dc <- dat[[refcol]]
 	} else {
-	  dc=dat[[refcol[1]]]
+	  stop("NOTE: 'refcol' should be a single integer or character value!")
 	}
 	# check attribute data class
 	if(is.factor(dc)){
