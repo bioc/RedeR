@@ -23,7 +23,8 @@ Additional arguments:
 \describe{
   \item{layout}{Vertex coordinates (graph layout). Accepts matrix with 2 cols (i.e. x and y coords) <matrix>. Note, xy coords are not updated when "layout=NULL". This allows graph attributes to be updated, keeping the same layout of an active graph.}
   \item{gscale}{Expansion factor of the graph area related to the app panel area (default = 75) <numeric>. } 
-  \item{zoom}{ Sets the zoom scale for the app panel (range: 0.0 to 100.0; default = 100.0) <numerics>. } 
+  \item{zoom}{Sets zoom scale for the app panel (range: 0.0 to 100.0; default = 100.0) <numerics>. } 
+  \item{gzoom}{Sets zoom scale only for objects on the app panel (range: 0.0 to 100.0; default = NULL) <numerics>. This option overrides 'zoom'.} 
   \item{gcoord}{Sets the graph x,y center. Coords between 0 and 100 are set to the visible area of the app panel (default = c(50,50)) <numeric vector>. } 
   \item{isNest}{Logical value, whether to nest all nodes into a new container (default = FALSE). See additional args in \code{\link[RedeR:nestNodes]{nestNodes}}} 
   \item{isAnchor}{If isNest=TRUE, this logical value sets whether to anchor the container in dynamic layouts (default = TRUE). }
