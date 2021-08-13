@@ -101,15 +101,16 @@ setMethod ('calld', 'RedPort',
              
              #(2) check calld
              if(checkcalls){
-               cat("(1) checking Java Runtime Environment (JRE version>=6)...")
+               cat("(1) checking Java Runtime Environment (JRE version>=8)...\n")
                system("java -version")
-               cat("(2) checking interface...")
+               cat("(2) checking interface...\n")
                command = paste(cmd, shQuote(filepath), sep=' ')
                res <- system(command, ignore.stdout = FALSE, ignore.stderr = FALSE, wait=FALSE)
-               if(res==0){
-                 cat("\nRestart the software with default options, otherwise please report \nany eventual error message to <mauro.a.castro at gmail.com>.\n")
+               if(is.numeric(res) && res[1]==0){
+                 cat("Restart the software with default options, otherwise please report \nany eventual error message to <mauro.a.castro at gmail.com>.\n")
                } else {
-                 message("\nPlease report any eventual error message to <mauro.a.castro at gmail.com>")
+                 message(res)
+                 message("Please report any eventual error message to <mauro.a.castro at gmail.com>")
                }
              } else {
                #(3)Execute 'calld' and update app settings in RedeR preferences:-----               

@@ -16,7 +16,7 @@ vignette: >
 
 # Overview
 
-**RedeR** is an R-based package combined with a Java application for dynamic network visualization and manipulation. It implements a callback engine by using a low-level R-to-Java interface to run complementary methods. In this sense, **RedeR** takes advantage of **R** to run robust statistics, while the R-to-Java interface bridge the gap between network analysis and visualization.
+**RedeR** is an R-based package combined with a Java application for interactive network visualization and manipulation. It implements a callback engine by using a low-level R-to-Java interface to run complementary methods. In this sense, **RedeR** takes advantage of **R** to run robust statistics, while the R-to-Java interface bridge the gap between network analysis and visualization.
 
 The package is designed to deal with three key challenges in network analysis. Firstly, biological networks are modular and hierarchical, so network visualization needs to take advantage of such structural features. Secondly, network analysis relies on statistical methods, many of which are already available in resources like CRAN or Bioconductor. However, the missing link between advanced visualization and statistical computing makes it hard to take full advantage of R packages for network analysis. Thirdly, in larger networks user input is needed to focus the view of the network on the biologically relevant parts, rather than relying on an automatic layout function (additional information is available at @Castro2012). The design of the software is depicted from **Figure 1**. Complex graphs with many attributes can be transferred from-and-to **R** using `addGraph` and `getGraph` functions.
 
@@ -29,20 +29,20 @@ The package is designed to deal with three key challenges in network analysis. F
 
 ## Main callback methods
 
-The first step is to build the server port, which will be required in all remote procedure calls. By default the constructor `RedPort` should set all details:
+The first step is to build the server port, which will be required for all graph calls. By default the constructor `RedPort` should set all details:
 
 ```{r label='Set server port', eval=TRUE}
 library(RedeR)
 rdp <- RedPort() 
 ``` 
 
-Next, invoke RedeR using the method `calld`:
+Next, launch the RedeR interface using the `calld` function:
 
 ```{r label='Main call', eval=FALSE}
 calld(rdp)
 ``` 
 
-Within an active interface, then the method `addGraph` can easily send R graphs to the application. For example, the following chunk adds an **igraph** object (**Fig. 2**):
+Then the method `addGraph` can be used to send R graphs to the application. For example, the following chunk sends an **igraph** object to RedeR (**Fig. 2**):
 
 ```{r label='Add graph (not included)', eval=TRUE, include=FALSE}
 library(igraph)
@@ -62,14 +62,14 @@ addGraph( rdp, g1, layout.kamada.kawai(g1) )
 
 <br>
 
-Conversely, RedeR graphs can be transferred to R and wrapped in **igraph** objects:
+Conversely, RedeR graphs can be transferred to R and wrapped into **igraph** objects:
 
 ```{r label='Get graph', eval=TRUE, results='hide'}
 g2 <- getGraph(rdp)
 resetd(rdp)
 ``` 
 
-The interface accepts additional graph attributes, as for example edge direction, edge width, edge weight, node shape, node size, node color etc. In order to pass these extensible features the attributes must be provided in a valid syntax (see `getGraph` and `addGraph` specification for additional details).
+The interface accepts additional graph attributes, as for example edge direction, edge width, edge weight, node shape, node size, node color, etc. In order to pass these extensible features the attributes must be provided in a valid syntax (see `getGraph` and `addGraph` specification for additional details).
 
 Another strategy is to wrap graphs into containers and then send it to the Java application. Next, the subgraphs `g3`and `g4` are assigned to different nested structures (**Fig. 3**).
 
@@ -117,7 +117,7 @@ relax(rdp,p2=400,p5=30,ps=T)
 
 <br>
 
-In **Figure 5** the same graph is used to exemplify the community structure mapped by the edge-betweenness algorithm (available on both the Java interface and the ** igraph ** package). In **Figure 6** these communities are nested to hidden containers, which are objects of the same class of nodes but with additional behaviors. You can build these containers either using **R** or **Java** functions (see options available in the **clustering** main menu and in the shortcuts of the nested objects, i.e., right-click a container).
+In **Figure 5** the same graph is used to exemplify the community structure mapped by the edge-betweenness algorithm (available on the **igraph** package). In **Figure 6** these communities are nested to hidden containers, which are objects of the same class of nodes but with additional behaviors. You can build these containers either using **R** or **Java** functions (see options available in the **clustering** main menu and in the shortcuts of the nested objects, i.e., right-click a container).
 
 ![title](fig5.png)
 <b>Figure 5.</b> Subgraphs detected based on edge betweenness.
@@ -129,7 +129,7 @@ In **Figure 5** the same graph is used to exemplify the community structure mapp
 
 # Workflow illustration
 
-This section provides a sequence of steps that illustrates how users might integrate its own pre-processed data in a given network to visualize subgraphs and nested networks. Please refer to @Castro2012 for more details about the biological background and experimental design of each example.
+This section provides a sequence of steps that illustrates how users might integrate its own pre-processed data to visualize subgraphs and nested networks. Please refer to @Castro2012 for more details about the biological background and experimental design of each example.
 
 ## Subgraphs
 
@@ -314,7 +314,7 @@ The RedeR package is freely available from the Bioconductor at https://bioconduc
 
 ## Java application
 
-The RedeR jar file is already included in the R package and, as usual, to run Java applications your system should have a copy of the JRE (Java Runtime Environment, version >= 6).
+The RedeR jar file is already included in the R package and, as usual, to run Java applications your system should have a copy of the JRE (Java Runtime Environment, version >= 8).
 
 # Session information
 
