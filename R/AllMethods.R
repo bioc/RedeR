@@ -885,7 +885,7 @@ setMethod ('addGraph', 'RedPort',
                } else if(is.na(zoom)){
                  warning("NOTE: invalid graph 'zoom' declaration: 'NA' found'!")
                } else {            
-                 message("** ... graph 'zoom'") 
+                 message("*** Setting graph 'zoom'...") 
                  invisible( .rederexpresspost(obj, 'RedHandler.setZoom', zoom) )
                }
              } else {
@@ -893,8 +893,7 @@ setMethod ('addGraph', 'RedPort',
              }
              
              #PS. the following methods must be used only in low-level calls!
-             
-             message('*** Uploading graph to RedeR server ***')
+             message('*** Uploading graph to RedeR server...')
              
              #Check layout option-----------------------------------------------
              if(is.null(layout)){
@@ -904,7 +903,7 @@ setMethod ('addGraph', 'RedPort',
              }
              if(!is.null(V(g)$coordX) && !is.null(V(g)$coordY)){
                if(length(V(g)$coordX)==length(V(g)$coordY) ){
-                 layout<-cbind(V(g)$coordX,V(g)$coordY)
+                 layout <- cbind(V(g)$coordX,V(g)$coordY)
                }
              }
              if(!is.null(layout) && !minimal){
@@ -914,9 +913,9 @@ setMethod ('addGraph', 'RedPort',
                  stop("Layout matrix must have 2 cols (i.e. x and y coords)!")
                } else if(nrow(layout)!=igraph::vcount(g) ) {
                  stop("Layout does not match graph vertices: inconsistent row number!")
-               } else if(!is.null(g$zoom)){
-                 V(g)$coordX=layout[,1]
-                 V(g)$coordY=layout[,2]
+               # } else if(!is.null(g$zoom)){
+               #   V(g)$coordX=layout[,1]
+               #   V(g)$coordY=layout[,2]
                } else {
                  s1=!is.numeric(gscale)
                  s2=is.null(gscale)
@@ -999,7 +998,7 @@ setMethod ('addGraph', 'RedPort',
              }
              
              if(length(igraph::list.vertex.attributes(g))>0){
-               message('*** Uploading node attributes ...')   
+               message('*** Uploading node attributes...')   
              }
              
              nodeAlias      = V(g)$nodeAlias 
@@ -1230,7 +1229,7 @@ setMethod ('addGraph', 'RedPort',
              edgeType       = E(g)$edgeType
              
              if(length(igraph::list.edge.attributes(g))>0 && igraph::ecount(g)>0){
-               message('*** Uploading edge attributes ...')   
+               message('*** Uploading edge attributes...')   
              }
              
              #set compatibility with igraph!          
