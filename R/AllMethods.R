@@ -2015,8 +2015,13 @@ setMethod ('selectNodes', 'RedPort',
              nt=ifelse(is.null(nt[1]),"",as.character(nt)[1])
              anchor=ifelse(anchor,"true","false")
              deSelectNodes(obj)#deselect all nodes previously to the call!
-             invisible (.rederexpresspost(obj, 'RedHandler.selectNodes', 
-                                          nodes, anchor, nt))
+             if(length(nodes)>1){
+               invisible(.rederexpresspost(obj, 'RedHandler.selectNodeVector', 
+                                            nodes, anchor, nt))
+             } else {
+               invisible(.rederexpresspost(obj, 'RedHandler.selectNodeString', 
+                                           nodes, anchor, nt))
+             }
            }
 )
 

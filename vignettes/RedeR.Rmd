@@ -103,7 +103,7 @@ The next chunk generates a scale-free graph according to the Barabasi-Albert mod
 
 ```{r label='Build scale-free graph and send to the app', eval=TRUE, results='hide'}
 g6 <- barabasi.game(500)
-addGraph(rdp, g6, zoom=20)
+addGraph(rdp, g6, gzoom=20)
 ``` 
 
 Then using the "relax" options available in the app you can tune the graph layout as presented in **Figure 4**.
@@ -177,9 +177,9 @@ gt12$nestAlias <- "12h"
 Now add all subgraphs to the app (**Fig.7**):
 
 ```{r label='Workflow 1: add subgraphs to the app', eval=TRUE, results='hide'}
-N0 <- addGraph(rdp, gt3, gcoord=c(10,25), gscale=20, isNest=TRUE, theme='tm1', zoom=30)
-N1 <- addGraph(rdp, gt6, gcoord=c(20,70), gscale=50, isNest=TRUE, theme='tm1', zoom=30)
-N2 <- addGraph(rdp, gt12, gcoord=c(70,55), gscale=80, isNest=TRUE, theme='tm1', zoom=30)
+N0 <- addGraph(rdp, gt3, gcoord=c(10,25), gscale=20, isNest=TRUE, theme='tm1', gzoom=30)
+N1 <- addGraph(rdp, gt6, gcoord=c(20,70), gscale=50, isNest=TRUE, theme='tm1', gzoom=30)
+N2 <- addGraph(rdp, gt12, gcoord=c(70,55), gscale=80, isNest=TRUE, theme='tm1', gzoom=30)
 ``` 
 
 ... and nest overlapping subgraphs (i.e. indicating overlapping time series!):
