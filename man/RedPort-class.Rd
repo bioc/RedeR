@@ -50,16 +50,6 @@
         \item{\link[RedeR:setArrowDirection]{setArrowDirection}}{}
     }
   }
-
-  \subsection{Methods to wrap up attributes and add/get graphs to/from RedeR}{  
-    \describe{
-        \item{\link[RedeR:addGraph]{addGraph}}{}
-        \item{\link[RedeR:getGraph]{getGraph}}{} 
-	      \item{\link[RedeR:addSubgraph]{addSubgraph}}{}
-	      \item{\link[RedeR:addSeries]{addSeries}}{}
-	      \item{\link[RedeR:duplicateGraph]{duplicateGraph}}{}
-    }
-  }        
           
   \subsection{Other methods to manipulate RedeR graphs}{  
     \describe{
@@ -74,7 +64,7 @@
         \item{\link[RedeR:deSelectGraph]{deSelectGraph}}{}
         \item{\link[RedeR:deleteSelectedEdges]{deleteSelectedEdges}}{}
         \item{\link[RedeR:deleteSelectedNodes]{deleteSelectedNodes}}{}
-        \item{\link[RedeR:isDynamicsActive]{isDynamicsActive}}{}
+        \item{\link[RedeR:isRelaxActive]{isRelaxActive}}{}
     }
   }  
   
@@ -107,7 +97,7 @@ Therefore, the Java callback engine must be initialized before any callback from
 \examples{
     
     # Creates a RedeR object by calling the constructor
-    rdp <- RedPort('MyPort')       
+    rdp <- RedPort('MyPort')
 
 }
 \keyword{graphs}

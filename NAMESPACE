@@ -6,12 +6,9 @@ exportMethods (
   ping,
   version,
   updateGraph,
+  updateCoordXY,
   getGraph,
   addGraph,
-  addSeries,
-  duplicateGraph,
-  addSubgraph,
-  addSubgraph.list,
   addLegend.color,
   addLegend.size,
   addLegend.shape,
@@ -19,23 +16,23 @@ exportMethods (
 
   getNodes,
   getNodeIDs,
-  addNodes,        
-  deleteNodes,     
-  nestNodes,     
-  nesthc,  
-                  
+  addNodes,
+  deleteNodes,
+  nestNodes, 
+  nesthc,
+
   updateContainerSize,
   mergeOutEdges,
   getContainerComponets,
-  mergeNodes,      
-                  
+  mergeNodes,
+    
   getEdges,
   getEdgeIDs,
   getSourceEdgeIDs,
   getTargetEdgeIDs,
   setArrowDirection,  
-  addEdges,               
-  deleteEdges,     
+  addEdges,
+  deleteEdges,
   addEdgeBetweenContainers,
                   
   selectEdges,
@@ -51,10 +48,14 @@ exportMethods (
   deleteSelectedEdges,
   deleteSelectedNodes,
                   
-  isDynamicsActive,
+  isRelaxActive,
   exitd,
-  resetd
-
+  resetd,
+  
+  duplicateGraph,
+  addSubgraph,
+  addSubgraph.list,
+  addSeries
   )
 
 export(
@@ -74,9 +75,9 @@ export(
 import(methods)
 importFrom(igraph, is.mutual, delete_vertex_attr, vertex_attr_names, delete.edges) 
 importFrom(igraph, delete_edge_attr, edge_attr_names, set_edge_attr, set_vertex_attr)
-importFrom(igraph, get.vertex.attribute, vcount, decompose.graph, erdos.renyi.game) 
-importFrom(igraph, get.edgelist, delete_vertices, delete_edges, add_edges, ecount)
-importFrom(igraph, union, V, E,'V<-','E<-')
+importFrom(igraph, get.vertex.attribute, vcount, ecount, decompose.graph) 
+importFrom(igraph, get.edgelist, delete_vertices, delete_edges, add_edges)
+importFrom(igraph, layout_with_drl, erdos.renyi.game, union, V, E,'V<-','E<-')
 importFrom(utils, setTxtProgressBar, txtProgressBar, close.socket, make.socket) 
 importFrom(utils, read.socket, write.socket)
 importFrom(graphics, hist, legend, lines, par, plot, polygon, rect, text)

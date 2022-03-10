@@ -5,7 +5,7 @@
 \title{Add series to RedeR application.}
 
 \description{
-Method to send series of graphs to RedeR app.
+Deprecated function...
 }
 
 \usage{
@@ -38,21 +38,7 @@ Submits series of R graphs to RedeR app.
 }
 
 \examples{
-# Initialize igraph
-library(igraph)
-
-\dontrun{
-
-rdp <- RedPort()
-calld(rdp)
-
-###
-
-g1 <- graph.lattice(c(3,3,3))
-addGraph( rdp, g1, layout.kamada.kawai(g1) )
-V(g1)$nodeColor<-heat.colors(vcount(g1))
-addSeries( rdp, g1)
-}
+# Deprecated function...
 }
 
 \keyword{graph}

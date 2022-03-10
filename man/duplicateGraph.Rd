@@ -5,7 +5,7 @@
 \title{Duplicate graphs in RedeR application.}
 
 \description{
-Method to duplicate graphs and subgraphs of a network.
+Deprecated function...
 }
 
 \usage{
@@ -30,29 +30,10 @@ Additional arguments:
 Duplicates graphs in RedeR app. 
 }
 
-
 \author{Mauro Castro}
 
-\seealso{
-\code{\link[RedeR:addGraph]{addGraph}}
-}
-
-
 \examples{
-# Initialize igraph
-library(igraph)
-
-\dontrun{
-
-rdp <- RedPort() 
-calld(rdp)
-
-###
-
-g1 <- graph.lattice(c(3,3,3))
-addGraph( rdp, g1, layout.kamada.kawai(g1) )
-duplicateGraph(rdp)
-}
+# Deprecated function...
 }
 
 \keyword{graph}

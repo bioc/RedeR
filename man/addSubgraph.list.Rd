@@ -5,7 +5,7 @@
 \title{Add a list of subgraphs to RedeR application.}
 
 \description{
-Method to send subgraphs to RedeR app.
+Deprecated function...
 }
 
 \usage{
@@ -35,33 +35,10 @@ Additional arguments:
 Extracts subgraphs from 'igraph' objects and sends the result to the RedeR app. 
 }
 
-
 \author{Mauro Castro}
 
-\seealso{
-\code{\link[RedeR:addSubgraph]{addSubgraph}}
-\code{\link[RedeR:addGraph]{addGraph}}
-}
-
-
 \examples{
-# Initialize igraph
-library(igraph)
-
-\dontrun{
-
-rdp <- RedPort()
-calld(rdp)
-
-g <- graph.lattice(c(5,5,5))
-
-#..extract subgraphs from g and send to RedeR:
-nl<-list(c(1:10),c(15:20))
-att<-data.frame(isNest=c(TRUE,TRUE), nestColor=c("#0000ff","#ff0000"))
-addSubgraph.list( rdp, g, nodeList=nl, gridRows=1, gatt=att, gridScale=80)
-
-#..for further attributes see 'addGraph' function!
-}
+# Deprecated function...
 }
 
 \keyword{graph}

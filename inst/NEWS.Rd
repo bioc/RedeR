@@ -2,6 +2,18 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
+\section{Version 2.0.0}{
+  \itemize{
+    \item Major upgrade of the user interface.
+  }
+}
+
+\section{Version 1.42.0}{
+  \itemize{
+    \item Regular maintenance, stable release.
+  }
+}
+
 \section{Version 1.40.0}{
   \itemize{
     \item Regular maintenance, stable release.

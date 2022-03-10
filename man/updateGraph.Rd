@@ -11,21 +11,15 @@ This function updates an active RedeR application session.
 }
 
 \usage{
-updateGraph(obj, g=NULL)
+updateGraph(obj)
 }
 
 \arguments{
   \item{obj}{ Object of RedPort Class.}
-  \item{g}{ 
-  An optional igraph object. If provided, 'g' will be updated with the graph
-  layout displayed in the RedeR interface. Note: 'g' must be the same 
-  igraph object sent to the RedeR interface by the 
-  \code{\link[RedeR:addGraph]{addGraph}} function.
-  }
 }
 
 \value{
-An update igraph object.
+An updated RedeR application session.
 }
 
 \author{

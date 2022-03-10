@@ -575,7 +575,7 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 	coltype=c('edgeColor')
 	numtype=c('edgeWidth','edgeWeight','arrowDirection')
 	defaultatt=c(coltype, numtype, 'edgeType')
-	defaultshapes=c('SOLID', 'DOTTED', 'DOTTED_SHORT', 'LONG_DASH')	
+	defaultshapes=c('SOLID', 'DOTTED', 'DASHED', 'LONG_DASH')	
 	d1='name, id, or hexadecimal <string or integer>'
 	d2='[0,+inf) <numeric>'
 	d3='0, 1, 2, or 3 <integer>'
@@ -823,7 +823,7 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 	}
 	#--set node shapes for 'category' or 'enumerated' data type (i.e. factor levels)
 	shapecategory=function(x,shapes,categvec,isrev){
-		validnames=c('SOLID', 'DOTTED', 'DOTTED_SHORT', 'LONG_DASH')
+		validnames=c('SOLID', 'DOTTED', 'DASHED', 'LONG_DASH')
 		if(is.null(shapes)){
 			shapes=validnames
 		} else if(is.numeric(shapes) || is.integer(shapes)){
@@ -1416,17 +1416,22 @@ check.igraph.format <- function(g){
   if(!is.null(E(g)$color) && is.null(E(g)$edgeColor) )E(g)$edgeColor<-E(g)$color
   if(!is.null(E(g)$weight) && is.null(E(g)$edgeWeight) )E(g)$edgeWeight<-E(g)$weight
   if(!is.null(E(g)$lty) && is.null(E(g)$edgeType) ){
-    edgeType<-E(g)$lty
-    tp<-c("blank","blank","solid","dashed","dotdash","longdash","twodash")
-    if(is.numeric(edgeType))tp=c(0:6)
-    edgeType[edgeType==0]="SOLID"
-    edgeType[edgeType==1]="SOLID"
-    edgeType[edgeType==2]="DOTTED"	
-    edgeType[edgeType==3]="DOTTED_SHORT"
-    edgeType[edgeType==4]="DOTTED"
-    edgeType[edgeType==5]="LONG_DASH"	
-    edgeType[edgeType==6]="DOTTED"
-    E(g)$edgeType=edgeType
+    edgeType <- E(g)$lty
+    idx <- c(0:6)
+    names(idx) <- c("blank","solid","dashed","dotted","dotdash","longdash","twodash")
+    if(!is.numeric(edgeType)){
+      edgeType[!edgeType%in%names(idx)] <- "solid"
+      edgeType <- idx[edgeType]
+    }
+    idx <- idx[edgeType+1]
+    edgeType[idx==0] <- "SOLID"
+    edgeType[idx==1] <- "SOLID"
+    edgeType[idx==2] <- "DASHED"	
+    edgeType[idx==3] <-"DOTTED"
+    edgeType[idx==4] <- "DOTTED"
+    edgeType[idx==5] <- "LONG_DASH"	
+    edgeType[idx==6] <- "DASHED"
+    E(g)$edgeType <- edgeType
   }
   if(is.null(V(g)$nodeLineColor) && !is.null(V(g)$color) ) V(g)$nodeLineColor="black"
   return(g)

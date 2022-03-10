@@ -20,10 +20,11 @@ mergeOutEdges(obj,...)
 \details{       
 Additional arguments: 
 \describe{
-   \item{rescale}{Logical value. Whether to rescale the out-edge width to fit container size limits; if false, it will run a simple sum (default=TRUE). }
-   \item{lb}{Custom lower bound to rescale edge width (default=NULL) <numerics>. }
-   \item{ub}{Custom upper bound to rescale edge width between containers (default=NULL) <numerics>. }
-   \item{nlev}{Number of levels to be merged in the hierarchy (default=1) <integer>. }
+   \item{nlevels}{Number of levels to be merged in the hierarchical network (default=2) <integer>. }
+   \item{rescale}{Logical value. Whether to rescale out-edge width to not overextend container size; 
+   if false, it will run a simple sum when combining out-edges between containers (default=TRUE). }
+   \item{lb}{Custom lower bound to rescale edge width between containers (default=NA) <numeric>. }
+   \item{ub}{Custom upper bound to rescale edge width between containers (default=NA) <numeric>. }
 }
 }
 
