@@ -1,14 +1,14 @@
 Package: RedeR
 Type: Package
 Title: Interactive visualization and manipulation of nested networks
-Version: 1.99.0
+Version: 1.99.1
 Author: Mauro Castro, Xin Wang, Florian Markowetz
 Maintainer: Mauro Castro <mauro.a.castro@gmail.com>
 Depends: R (>= 4.0), methods
 Imports: igraph
 Suggests: BiocStyle, knitr, rmarkdown, markdown, TreeAndLeaf
 SystemRequirements: Java Runtime Environment (Java>= 11)
-Description: RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of modular structures, nested networks and multiple levels of hierarchical associations.
+Description: RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of nested networks.
 License: GPL (>= 3)
 biocViews: Infrastructure, GraphAndNetwork, Software, Network, Visualization, DataRepresentation
 VignetteBuilder: knitr
