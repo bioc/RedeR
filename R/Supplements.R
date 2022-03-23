@@ -90,17 +90,17 @@ gtoy.rm <- function(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7,
   if(!is.null(fname)) dev.off()
 }
 .simulateModules <- function(par){
-  gg <- igraph::graph.empty(n=0, directed=FALSE)
+  gg <- igraph::make_empty_graph(n=0, directed=FALSE)
   mdmap <- c()
   nver <- function(nmax,p1){sum(runif(nmax)>1-p1)}
   for(i in 1:par["m"]){
     v <- max(par["nmin"],nver(par["nmax"],par["p1"]))
     g <- igraph::erdos.renyi.game(n=v, p.or.m=par["p3"], type="gnp", 
                                   directed=FALSE)
-    gg <- igraph::graph.disjoint.union(gg,g)
+    gg <- igraph::disjoint_union(gg,g)
     mdmap <- c(mdmap,rep(i,v))		
   }
-  adj <- igraph::get.adjacency(gg,sparse=FALSE)
+  adj <- igraph::as_adjacency_matrix(gg,sparse=FALSE)
   adj[,] <- 0
   adj[,] <- runif(nrow(adj)*ncol(adj))
   adj[adj<(1-(par["p2"]/par["m"]))] <- 0
@@ -108,8 +108,8 @@ gtoy.rm <- function(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7,
     adj[mdmap==i,mdmap==i] <- 0
   }
   adj[adj>0] <- 1
-  adj <- adj+igraph::get.adjacency(gg, sparse=FALSE)
-  gg <- igraph::graph.adjacency(adj, mode="undirected", diag=FALSE)
+  adj <- adj+igraph::as_adjacency_matrix(gg, sparse=FALSE)
+  gg <- igraph::graph_from_adjacency_matrix(adj, mode="undirected", diag=FALSE)
   gg <- igraph::simplify(gg, remove.multiple = TRUE, remove.loops = TRUE)
   gg$par <- par
   V(gg)$name <- paste("n",1:igraph::vcount(gg),sep="")
@@ -141,7 +141,7 @@ gtoy.rm <- function(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7,
   #g2 <- barabasi.game(vcount(g1)+nn,directed=FALSE,power=0)
   V(g2)$name <- paste("n",1:vcount(g2),sep="")
   g2 <- igraph::union(g1, g2, byname=TRUE)
-  g2 <- igraph::decompose.graph(g2, min.vertices=1,max.comps=1)[[1]]
+  g2 <- igraph::decompose(g2, min.vertices=1,max.comps=1)[[1]]
   #-- adiciona atividade para os novos nodos
   simulated.signal <- runif(vcount(g2), lb, ub)
   V(g2)$simulated.signal <- simulated.signal
@@ -180,7 +180,7 @@ gtoy.rm <- function(m=5, nmax=30, nmin=5, p1=0.5, p2=0.03, p3=0.7,
 # Add RedeR atts to igraph vertices
 att.addv <- function(g, to, value, filter = NULL, index = V(g)){
   if(!is.null(filter)) {
-    index <- get.vertex.attribute(g, names(filter)) %in% unlist(filter)
+    index <- vertex_attr(g, names(filter)) %in% unlist(filter)
     g <- set_vertex_attr(g, to, value = value, index = index)
   } else {
     g <- set_vertex_attr(g, to, value = value, index = index)
@@ -222,7 +222,7 @@ att.setv <- function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.c
 		return(invisible())
 	}
 	# check igraph object and main args---------------------------------
-	if(!igraph::is.igraph(g)){
+	if(!igraph::is_igraph(g)){
 	  stop("Not an igraph object!")
 	}
 	if(!is.character(from))stop("NOTE: arg. 'from' should be a string!")
@@ -230,7 +230,7 @@ att.setv <- function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.c
 	if(!is.character(to) && !is.numeric(to) && !is.integer(to) )stop("NOTE: arg. 'to' should be a string or an integer!")
 	to=to[1]
 	# get ref. att---
-	fromatt=igraph::get.vertex.attribute(g, from)
+	fromatt=igraph::vertex_attr(g, from)
 	if(is.null(fromatt) || length(fromatt)!=igraph::vcount(g)){
 		stop(paste("NOTE: graph attribute '",from,"' is absent or not consistent with node count!",sep=""))
 	}
@@ -551,12 +551,12 @@ att.setv <- function(g=NULL, from='name', to='nodeColor', pal=1, cols=NULL, na.c
 	}
 	# return updated graph
 	if(!is.null(att)){
-		g=igraph::set.vertex.attribute(graph=g, name=to, value=att$res)
+		g=igraph::set_vertex_attr(graph=g, name=to, value=att$res)
 		if(is.logical(getleg) && getleg){
 			to=gsub("\\b(\\w)","\\U\\1",to,perl=TRUE)
 			leg=paste("leg",to,sep="")
 			att$leg$title<-title
-			g=igraph::set.graph.attribute(graph=g, name=leg, value=att$leg)
+			g=igraph::set_graph_attr(graph=g, name=leg, value=att$leg)
 		}
 	} else {
 		message("...unable to conclude the command!")
@@ -589,7 +589,7 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 		return(invisible())
 	}
     # check igraph object and main args---------------------------------
-    if(!igraph::is.igraph(g)){
+    if(!igraph::is_igraph(g)){
         stop("Not an igraph object!")
     }	
 	if(!is.character(from))stop("NOTE: arg. 'from' should be a string!")
@@ -597,7 +597,7 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 	if(!is.character(to) && !is.numeric(to) && !is.integer(to) )stop("NOTE: arg. 'to' should be a string or an integer!")
 	to=to[1]
 	# get ref. att---
-	fromatt=igraph::get.edge.attribute(g, from)	
+	fromatt=igraph::edge_attr(g, from)	
 	if(is.null(fromatt) || length(fromatt)!=igraph::ecount(g)){
 		stop(paste("NOTE: graph attribute '",from,"' is absent or not consistent with edge count!",sep=""))
 	}
@@ -909,12 +909,12 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 	}
 	# return updated graph
 	if(!is.null(att)){
-		g=igraph::set.edge.attribute(graph=g, name=to, value=att$res)
+		g=igraph::set_edge_attr(graph=g, name=to, value=att$res)
 		if(is.logical(getleg) && getleg){
 			to=gsub("\\b(\\w)","\\U\\1",to,perl=TRUE)
 			leg=paste("leg",to,sep="")
 			att$leg$title<-title
-			g=igraph::set.graph.attribute(graph=g, name=leg, value=att$leg)
+			g=igraph::set_graph_attr(graph=g, name=leg, value=att$leg)
 		}
 	} else {
 		message("...unable to conclude the command!")
@@ -931,7 +931,7 @@ att.mapv <- function(g, dat, refcol=1){
 		stop("'dat' should be a data frame!")
 	}
 	# check igraph object and main args---------------------------------
-	if(!igraph::is.igraph(g)){
+	if(!igraph::is_igraph(g)){
 	  stop("'g' should be an igraph object!")
 	}
 	# get vecs to match!
@@ -993,7 +993,7 @@ att.mapv <- function(g, dat, refcol=1){
 			  lv <- check.numeric(levels(att))
 			  att <- lv[att]
 			}
-			g=igraph::set.vertex.attribute(graph=g, name=names(dat)[i],value=att)
+			g=igraph::set_vertex_attr(graph=g, name=names(dat)[i],value=att)
 		}
 	}
 	return(g)
@@ -1019,7 +1019,7 @@ att.mape <- function(g, dat, refcol=c(1,2)){
 		stop("not a data frame!")
 	}
     # check igraph object
-    if(!igraph::is.igraph(g)){
+    if(!igraph::is_igraph(g)){
         stop("Not an igraph object!")
     }
   if(!all.integerValues(refcol)){
@@ -1033,7 +1033,7 @@ att.mape <- function(g, dat, refcol=c(1,2)){
 	if(is.null(nodes) || igraph::vcount(g)!=length(nodes)){
 		stop("NOTE: require 'name' attribute in igraph vertices!")
 	}
-	edges=igraph::get.edgelist(g)
+	edges=igraph::as_edgelist(g)
 	edgevec=array(NA,dim=nrow(edges))
 	for(i in 1:nrow(edges)){
 		edgevec[i]=paste(edges[i,],collapse=",")
@@ -1064,7 +1064,7 @@ att.mape <- function(g, dat, refcol=c(1,2)){
 		if(!i%in%refcol){
 			att=dat[[i]]
 			if(is.factor(att))att=levels(att)[att]
-			g=igraph::set.edge.attribute(graph=g, name=names(dat)[i],value=att)
+			g=igraph::set_edge_attr(graph=g, name=names(dat)[i],value=att)
 		}
 	}
 	return(g)
@@ -1080,7 +1080,7 @@ subg <- function(g, dat, refcol=1, maincomp=TRUE, connected=TRUE, transdat=TRUE)
 	} else {
 		stop("not a data frame!")
 	}
-	if(!igraph::is.igraph(g)){
+	if(!igraph::is_igraph(g)){
 	  stop("Not an igraph object!")
 	}
 	if(is.null(V(g)$name))V(g)$name=as.character(V(g))
@@ -1088,15 +1088,15 @@ subg <- function(g, dat, refcol=1, maincomp=TRUE, connected=TRUE, transdat=TRUE)
 	if(length(ids)!=length(allids)){
 	  message("...note: not all genes found in the network!")
 	}
-	sg=igraph::induced.subgraph(graph=g,vids=ids)
+	sg=igraph::induced_subgraph(graph=g,vids=ids)
 	if(maincomp){
 		comp <- igraph::clusters(sg)
 		cids <- which.max(comp$csize)
-		sg <- igraph::induced.subgraph(graph=sg, vids=V(sg)[comp$membership == cids])
+		sg <- igraph::induced_subgraph(graph=sg, vids=V(sg)[comp$membership == cids])
 	} else if(connected){
 		dg=igraph::degree(sg)>0
 		nodes=V(sg)$name[dg]
-		sg=igraph::induced.subgraph(graph=sg,vids=nodes)
+		sg=igraph::induced_subgraph(graph=sg,vids=nodes)
 	}
 	if(transdat && is.data.frame(dat)){
 		sg <- att.mapv(g=sg, dat=dat, refcol=refcol)
@@ -1400,6 +1400,37 @@ cea <- function(x, sig=0.01, padj.method="fdr",
 ##-----------------------------------------------------------------------------
 #Use default igraph atts if available------------------
 check.igraph.format <- function(g){
+  #---remove vertex attributes set as lists
+  vnames <- vertex_attr_names(g)
+  if(length(vnames)>0){
+    for(i in 1:length(vnames)){
+      if(is.list(vertex_attr(g, vnames[i]))){
+        g <- delete_vertex_attr(g, vnames[i])
+      } else {
+        vnames[i] <- NA
+      }
+    }
+    if(any(!is.na(vnames))){
+      tp1 <- "The following vertex attributes are set as lists and will be removed:\n"
+      warning(tp1, paste(vnames[!is.na(vnames)], collapse = ", "), call. = FALSE)
+    }
+  }
+  #---remove edge attributes set as lists
+  enames <- edge_attr_names(g)
+  if(length(enames)>0){
+    for(i in 1:length(enames)){
+      if(is.list(edge_attr(g, enames[i]))){
+        g <- delete_edge_attr(g, enames[i])
+      } else {
+        enames[i] <- NA
+      }
+    }
+    if(any(!is.na(enames))){
+      tp1 <- "The following edge attributes are set as lists and will be removed:\n"
+      warning(tp1, paste(enames[!is.na(enames)], collapse = ", "), call. = FALSE)
+    }    
+  }
+  #--- Set igraph attributes
   if(!is.null(V(g)$color) && is.null(V(g)$nodeColor) )V(g)$nodeColor=V(g)$color
   if(!is.null(V(g)$frame.color) && is.null(V(g)$nodeLineColor) )V(g)$nodeLineColor=V(g)$frame.color
   if(!is.null(V(g)$size) && is.null(V(g)$nodeSize) )V(g)$nodeSize=V(g)$size*2.5
@@ -1462,18 +1493,18 @@ check.igraph.direction <- function(g){
     E(g)$arrowDirection<-E(g)$arrowType
   } else {
     # set direction to edge attributes
-    idxmutual<-igraph::is.mutual(g)
+    idxmutual<-igraph::which_mutual(g)
     E(g)$arrowDirection=1
     E(g)$arrowDirection[idxmutual]=3
     #g=igraph::as.undirected(g, mode="collapse") //essa funcao nao retorno ordem correta!!! controlado agora em J!
-    c1=length(igraph::list.edge.attributes(g))>0
+    c1=length(igraph::edge_attr_names(g))>0
     c2=sum(idxmutual)>0
     if(c1 && c2){
       warning("NOTE: attributes from mutual edges were collapsed to unique edges (see 'addGraph' doc).")
       #isso sera feito no lado Java, ultimo link define valor final!!!
     }
     #Remove multiple edges and loops (obs. for directed graphs order does matter)
-    if(!igraph::is.simple(g)){
+    if(!igraph::is_simple(g)){
       g=igraph::simplify(g, remove.multiple = TRUE, remove.loops = TRUE)
       warning("NOTE: loops and/or multiple edges were removed from your graph (see 'addGraph' doc)!")
     }
@@ -1484,9 +1515,9 @@ check.igraph.direction <- function(g){
 ##format arrowType
 arrowtype4reder <- function(g){
   #---get edges and mode
-  edgeMtx<-igraph::get.adjacency(g, sparse=FALSE,attr=NULL, names=FALSE)
-  modeMtx<-igraph::get.adjacency(g, sparse=FALSE,attr="arrowType", names=FALSE)
-  ix<-igraph::get.edgelist(g,names=FALSE)
+  edgeMtx<-igraph::as_adjacency_matrix(g, sparse=FALSE,attr=NULL, names=FALSE)
+  modeMtx<-igraph::as_adjacency_matrix(g, sparse=FALSE,attr="arrowType", names=FALSE)
+  ix<-igraph::as_edgelist(g,names=FALSE)
   #---differentiate upper.tri/lower.tri
   modeMtx[upper.tri(modeMtx)]<-modeMtx[upper.tri(modeMtx)]*10
   edgeMtx[modeMtx!=0]<-modeMtx[modeMtx!=0]*10
@@ -1498,9 +1529,9 @@ arrowtype4reder <- function(g){
   })
   arrowType[arrowType==1 | arrowType==2]<-0
   #---map mutual edges and remove duplicated
-  idx<-is.mutual(g) & ix[,1]>ix[,2]
+  idx<-which_mutual(g) & ix[,1]>ix[,2]
   arrowType<-arrowType[!idx]
-  g<-delete.edges(g,edges=which(idx))
+  g<-delete_edges(g,edges=which(idx))
   #---set mode---#
   # arrow key, related to 'A->B' orientation
   #  0 = undirected:  0 (A-B or B-A)

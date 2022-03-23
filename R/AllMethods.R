@@ -166,7 +166,7 @@ setMethod ('updateGraph', 'RedPort',
 setMethod ('updateCoordXY', 'RedPort', 
            function (obj, g, delNodes=FALSE, delEdges=FALSE){
              if(ping(obj)==0) stop("No RedeR interface is availble.")
-             if(!igraph::is.igraph(g))
+             if(!igraph::is_igraph(g))
                stop("'g' object should be an igraph object!")
              gcls <- class(g)
              invisible(.rederpost(obj,'RedHandler.stopRelax'))
@@ -233,9 +233,9 @@ setMethod ('updateCoordXY', 'RedPort',
            }
 )
 .get_elist <- function(g){
-  el <- get.edgelist(g)
+  el <- as_edgelist(g)
   if(nrow(el)>0){
-    el <- data.frame(get.edgelist(g), stringsAsFactors = FALSE)
+    el <- data.frame(as_edgelist(g), stringsAsFactors = FALSE)
     colnames(el) <- c("Node1","Node2")
     el$ID12 <- paste0(el$Node1,"|",el$Node2)
     el$ID21 <- paste0(el$Node2,"|",el$Node1) 
@@ -246,7 +246,7 @@ setMethod ('updateCoordXY', 'RedPort',
 #-------------------------------------------------------------------------------
 setMethod ('getGraph', 'RedPort', 
            function (obj, status="all", type="node", attribs="plain") {
-             if(ping(obj)==0)return(igraph::graph.empty(n=0, directed=FALSE))
+             if(ping(obj)==0)return(igraph::make_empty_graph(n=0, directed=FALSE))
              
              #check loaded igraph
              igraph.check()
@@ -257,18 +257,18 @@ setMethod ('getGraph', 'RedPort',
              
              #Build igraph object
              if(length(nodes)==1 && nodes==""){
-               g = igraph::graph.empty(n=0, directed=FALSE)
+               g = igraph::make_empty_graph(n=0, directed=FALSE)
                return(g) 
              } else if(length(edges)==1 && edges ==""){
                edges = NULL
-               g	   = igraph::graph.empty(n=length(nodes), directed=FALSE)
-               g     = igraph::set.vertex.attribute(g, "name", value=nodes) 
+               g	   = igraph::make_empty_graph(n=length(nodes), directed=FALSE)
+               g     = igraph::set_vertex_attr(g, "name", value=nodes) 
              } else {
                nodes	= data.frame(name=nodes, stringsAsFactors=FALSE)
                edges 	= matrix(edges,ncol=2, byrow=TRUE)
                colnames(edges) = c("NodeA","NodeB")
                edges 	= data.frame(edges,stringsAsFactors=FALSE) 
-               g  	 	= igraph::graph.data.frame(edges, directed=FALSE, vertices=nodes)
+               g  	 	= igraph::graph_from_data_frame(edges, directed=FALSE, vertices=nodes)
              }  
              
              #Add required attributes    
@@ -277,8 +277,8 @@ setMethod ('getGraph', 'RedPort',
              } else if(attribs=="plain"){
                nodeX = .getNodeX(obj, status, type )
                nodeY = .getNodeY(obj, status, type )
-               g = igraph::set.vertex.attribute(g, "coordX", value=nodeX)
-               g = igraph::set.vertex.attribute(g, "coordY", value=nodeY)
+               g = igraph::set_vertex_attr(g, "coordX", value=nodeX)
+               g = igraph::set_vertex_attr(g, "coordY", value=nodeY)
                g$zoom = .rederpost(obj,'RedHandler.getZoom')
                return(g)
              } else if(attribs=="all"){
@@ -294,18 +294,18 @@ setMethod ('getGraph', 'RedPort',
                nodeLineColor  = .getNodeLineColor(obj, status, type ) 
                nodeFontSize   = .getNodeFontSize(obj, status, type )
                nodeFontColor  = .getNodeFontColor(obj, status, type )
-               g     = igraph::set.vertex.attribute(g, "nodeAlias",  value=nodeAlias)
-               g     = igraph::set.vertex.attribute(g, "nodeBend",   value=nodeBend)
-               g     = igraph::set.vertex.attribute(g, "coordX",   value=nodeX)
-               g     = igraph::set.vertex.attribute(g, "coordY",   value=nodeY)
-               g     = igraph::set.vertex.attribute(g, "nodeSize",   value=nodeSize)          
-               g     = igraph::set.vertex.attribute(g, "nodeShape",  value=nodeShape)
-               g     = igraph::set.vertex.attribute(g, "nodeColor",  value=nodeColor)
-               g     = igraph::set.vertex.attribute(g, "nodeWeight", value=nodeWeight)
-               g     = igraph::set.vertex.attribute(g, "nodeLineWidth",  value=nodeLineWidth)
-               g     = igraph::set.vertex.attribute(g, "nodeLineColor",  value=nodeLineColor)
-               g     = igraph::set.vertex.attribute(g, "nodeFontSize",   value=nodeFontSize)
-               g     = igraph::set.vertex.attribute(g, "nodeFontColor",  value=nodeFontColor) 
+               g     = igraph::set_vertex_attr(g, "nodeAlias",  value=nodeAlias)
+               g     = igraph::set_vertex_attr(g, "nodeBend",   value=nodeBend)
+               g     = igraph::set_vertex_attr(g, "coordX",   value=nodeX)
+               g     = igraph::set_vertex_attr(g, "coordY",   value=nodeY)
+               g     = igraph::set_vertex_attr(g, "nodeSize",   value=nodeSize)          
+               g     = igraph::set_vertex_attr(g, "nodeShape",  value=nodeShape)
+               g     = igraph::set_vertex_attr(g, "nodeColor",  value=nodeColor)
+               g     = igraph::set_vertex_attr(g, "nodeWeight", value=nodeWeight)
+               g     = igraph::set_vertex_attr(g, "nodeLineWidth",  value=nodeLineWidth)
+               g     = igraph::set_vertex_attr(g, "nodeLineColor",  value=nodeLineColor)
+               g     = igraph::set_vertex_attr(g, "nodeFontSize",   value=nodeFontSize)
+               g     = igraph::set_vertex_attr(g, "nodeFontColor",  value=nodeFontColor) 
                g$zoom <- .rederpost(obj,'RedHandler.getZoom')
                #..get edge attrs. if present!
                if(!is.null(edges)){
@@ -314,13 +314,13 @@ setMethod ('getGraph', 'RedPort',
                  edgeWidth      = .getEdgeWidth(obj, status, type )
                  edgeColor      = .getEdgeColor(obj, status, type )
                  edgeType       = .getEdgeType(obj, status, type )
-                 g     = igraph::set.edge.attribute(g, "arrowDirection", value=arrowDirection)
-                 #g     = igraph::set.edge.attribute(g, "arrowLength",    value= arrowLength)
-                 #g     = igraph::set.edge.attribute(g, "arrowAngle",     value= arrowAngle)
-                 g     = igraph::set.edge.attribute(g, "edgeWeight",     value=edgeWeight)
-                 g     = igraph::set.edge.attribute(g, "edgeWidth",      value=edgeWidth)
-                 g     = igraph::set.edge.attribute(g, "edgeColor",      value=edgeColor)
-                 g     = igraph::set.edge.attribute(g, "edgeType",       value=edgeType)
+                 g     = igraph::set_edge_attr(g, "arrowDirection", value=arrowDirection)
+                 #g     = igraph::set_edge_attr(g, "arrowLength",    value= arrowLength)
+                 #g     = igraph::set_edge_attr(g, "arrowAngle",     value= arrowAngle)
+                 g     = igraph::set_edge_attr(g, "edgeWeight",     value=edgeWeight)
+                 g     = igraph::set_edge_attr(g, "edgeWidth",      value=edgeWidth)
+                 g     = igraph::set_edge_attr(g, "edgeColor",      value=edgeColor)
+                 g     = igraph::set_edge_attr(g, "edgeType",       value=edgeType)
                }          
                return(g)       
              }
@@ -356,19 +356,19 @@ setMethod ('addGraph', 'RedPort',
                isAssigned <- isAssign
              }   
              #Check igraph object-----------------------------------------------
-             if(!igraph::is.igraph(g))
+             if(!igraph::is_igraph(g))
                stop("'g' should be an igraph object!")
              
              #Check igraph direction
-             if(igraph::is.directed(g)) g <- check.igraph.direction(g)
+             if(igraph::is_directed(g)) g <- check.igraph.direction(g)
              
              #Check igraph format
-             g<-check.igraph.format(g)
+             g <- check.igraph.format(g)
 
              #Check igraph size-------------------------------------------------
              #...if empty graph!
              if(igraph::vcount(g)==0){
-               g=igraph::add.vertices(g, 2)
+               g=igraph::add_vertices(g, 2)
                if((!is.null(G(g,"isNested")) && G(g,"isNested"))||isNested){
                  V(g)$name=c("NN0<$$>","NN1<$$>")
                } else {
@@ -387,7 +387,7 @@ setMethod ('addGraph', 'RedPort',
              #Add empty node if igraph::vcount(g)==1 
              #..to keep data type as vector during server connection!   
              if(igraph::vcount(g)==1){
-               g=igraph::add.vertices(g, 1)
+               g=igraph::add_vertices(g, 1)
                if((!is.null(G(g,"isNested")) && G(g,"isNested"))||isNested){
                  V(g)$name[2]="NN0<$$>"   		
                } else {
@@ -561,6 +561,11 @@ setMethod ('addGraph', 'RedPort',
                    pScale <- 500
                  }
                  if(isNested)pScale=pScale/sqrt(2)
+                 if(anyNA(layout)){
+                   idx <- is.na(layout)
+                   rg <- range(layout, na.rm = T)
+                   layout[idx] <- runif(sum(idx),rg[1],rg[2])
+                 }
                  l1 <- diff(range(layout[,1]))
                  l2 <- diff(range(layout[,2]))
                  if(l1>l2){
@@ -570,7 +575,7 @@ setMethod ('addGraph', 'RedPort',
                    l1 <- l1/l2*pScale
                    l2 <- pScale
                    }
-                 layout <- igraph::layout.norm(layout,xmin=0, xmax=l1, ymin=0, ymax=l2)
+                 layout <- igraph::norm_coords(layout, xmin=0, xmax=l1, ymin=0, ymax=l2)
                  V(g)$coordX <- layout[,1]
                  V(g)$coordY <- layout[,2]
                }       
@@ -578,7 +583,7 @@ setMethod ('addGraph', 'RedPort',
              
              #Set/get nodes and edges to submit to the app------------------------        
              nodes = V(g)$name
-             edges = igraph::get.edgelist(g, names=TRUE)
+             edges = igraph::as_edgelist(g, names=TRUE)
              edges = cbind(as.character(edges[,1]),as.character(edges[,2]))    
              
              #Set graph background color if available
@@ -598,7 +603,7 @@ setMethod ('addGraph', 'RedPort',
              #Add nodes, edges and set attributes (if available)------------------------
              if(igraph::vcount(g)>0)message("** ... nodes!") 
              if(igraph::ecount(g)>0)message("** ... edges!")
-             if(length(igraph::list.vertex.attributes(g))>0){
+             if(length(igraph::vertex_attr_names(g))>0){
                message('*** Uploading node attributes...')   
              }
              nodeAlias      = V(g)$nodeAlias 
@@ -806,7 +811,7 @@ setMethod ('addGraph', 'RedPort',
              edgeColor      = E(g)$edgeColor
              edgeType       = E(g)$edgeType
              
-             if(length(igraph::list.edge.attributes(g))>0 && igraph::ecount(g)>0){
+             if(length(igraph::edge_attr_names(g))>0 && igraph::ecount(g)>0){
                message('*** Uploading edge attributes...')   
              }
              
@@ -1771,8 +1776,8 @@ setMethod ('nesthc', 'RedPort',
              }
              #get a basic layout just for graphs' first view
              if(is.null(gridRows)){
-               gbasic=igraph::graph.empty(n=nestcount,directed=FALSE)  
-               layout=igraph::layout.norm(igraph::layout.circle(gbasic), xmin = 25, xmax=75, ymin=25, ymax=75) 
+               gbasic=igraph::make_empty_graph(n=nestcount,directed=FALSE)  
+               layout=igraph::norm_coords(igraph::layout.circle(gbasic), xmin = 25, xmax=75, ymin=25, ymax=75) 
              } else {
                bin=100/(gridCols+1)
                xgrid=c(1:gridCols)*bin
@@ -1954,7 +1959,7 @@ setMethod ('addLegend.color', 'RedPort',
              type=switch(type, node="nodecolor", edge="edgecolor", "nodecolor")
              
              #Check if igraph object------------------------------------------
-             if(igraph::is.igraph(colvec)){
+             if(igraph::is_igraph(colvec)){
                if(type=="nodecolor"){
                  if(!is.null(G(colvec,"legNodeColor")$scale)){
                    if(!is.null(G(colvec,"legNodeColor")$legend) && is.null(labvec)){
@@ -2080,7 +2085,7 @@ setMethod ('addLegend.size', 'RedPort',
              type=switch(type, node="nodesize", edge="edgewidth", "nodesize")
              
              #Check if igraph object------------------------------------------
-             if(igraph::is.igraph(sizevec)){
+             if(igraph::is_igraph(sizevec)){
                if(type=="nodesize"){
                  if(!is.null(G(sizevec,"legNodeSize")$scale)){
                    if(!is.null(G(sizevec,"legNodeSize")$legend) && is.null(labvec)){
@@ -2220,7 +2225,7 @@ setMethod ('addLegend.shape', 'RedPort',
              type=switch(type, node="nodeshape", edge="edgeshape", "nodeshape")
              
              #Check if igraph object------------------------------------------
-             if(igraph::is.igraph(shapevec)){
+             if(igraph::is_igraph(shapevec)){
                if(type=="nodeshape"){
                  if(!is.null(G(shapevec,"legNodeShape")$shape)){
                    if(!is.null(G(shapevec,"legNodeShape")$legend) && is.null(labvec)){
@@ -2357,7 +2362,7 @@ setMethod ('addLegend.shape', 'RedPort',
 #-------------------------------------------------------------------------------
 #fix an attribute conflict between igraph/0 versions!
 G <- function(g,att){
-  igraph::get.graph.attribute(g,att)
+  igraph::graph_attr(g,att)
 }
 #-------------------------------------------------------------------------------
 .getNodeAliases<-function (obj, status="all", type="node") { 

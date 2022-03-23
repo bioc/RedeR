@@ -73,10 +73,10 @@ export(
   )
 
 import(methods)
-importFrom(igraph, is.mutual, delete_vertex_attr, vertex_attr_names, delete.edges) 
+importFrom(igraph, which_mutual, delete_vertex_attr, vertex_attr_names, delete_edges) 
 importFrom(igraph, delete_edge_attr, edge_attr_names, set_edge_attr, set_vertex_attr)
-importFrom(igraph, get.vertex.attribute, vcount, ecount, decompose.graph) 
-importFrom(igraph, get.edgelist, delete_vertices, delete_edges, add_edges)
+importFrom(igraph, vertex_attr, edge_attr, vcount, ecount, decompose) 
+importFrom(igraph, as_edgelist, delete_vertices, delete_edges, add_edges)
 importFrom(igraph, layout_with_drl, erdos.renyi.game, union, V, E,'V<-','E<-')
 importFrom(utils, setTxtProgressBar, txtProgressBar, close.socket, make.socket) 
 importFrom(utils, read.socket, write.socket)
