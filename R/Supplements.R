@@ -597,7 +597,7 @@ att.sete <- function(g=NULL, from='name', to='edgeColor', pal=1, cols=NULL, na.c
 	if(!is.character(to) && !is.numeric(to) && !is.integer(to) )stop("NOTE: arg. 'to' should be a string or an integer!")
 	to=to[1]
 	# get ref. att---
-	fromatt=igraph::edge_attr(g, from)	
+	fromatt=igraph::edge_attr(g, from)
 	if(is.null(fromatt) || length(fromatt)!=igraph::ecount(g)){
 		stop(paste("NOTE: graph attribute '",from,"' is absent or not consistent with edge count!",sep=""))
 	}
@@ -1428,7 +1428,7 @@ check.igraph.format <- function(g){
     if(any(!is.na(enames))){
       tp1 <- "The following edge attributes are set as lists and will be removed:\n"
       warning(tp1, paste(enames[!is.na(enames)], collapse = ", "), call. = FALSE)
-    }    
+    }
   }
   #--- Set igraph attributes
   if(!is.null(V(g)$color) && is.null(V(g)$nodeColor) )V(g)$nodeColor=V(g)$color

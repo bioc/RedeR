@@ -113,7 +113,7 @@ setMethod ('calld', 'RedPort',
              } else {
                #(3)Execute 'calld' and update app settings in RedeR preferences:-----               
                command = paste(cmd, shQuote(filepath), "openshellDcall", obj@port, sep=' ')
-               system(command, ignore.stdout = !checkcalls, ignore.stderr = !checkcalls, wait=FALSE) 
+               system(command, ignore.stdout = !checkcalls, ignore.stderr = !checkcalls, wait=FALSE)
              }
 
              #(4) Wait response from the app (implement a short-delay)-------------
@@ -262,12 +262,12 @@ setMethod ('getGraph', 'RedPort',
              } else if(length(edges)==1 && edges ==""){
                edges = NULL
                g	   = igraph::make_empty_graph(n=length(nodes), directed=FALSE)
-               g     = igraph::set_vertex_attr(g, "name", value=nodes) 
+               g     = igraph::set_vertex_attr(g, "name", value=nodes)
              } else {
                nodes	= data.frame(name=nodes, stringsAsFactors=FALSE)
                edges 	= matrix(edges,ncol=2, byrow=TRUE)
                colnames(edges) = c("NodeA","NodeB")
-               edges 	= data.frame(edges,stringsAsFactors=FALSE) 
+               edges 	= data.frame(edges,stringsAsFactors=FALSE)
                g  	 	= igraph::graph_from_data_frame(edges, directed=FALSE, vertices=nodes)
              }  
              
@@ -298,14 +298,14 @@ setMethod ('getGraph', 'RedPort',
                g     = igraph::set_vertex_attr(g, "nodeBend",   value=nodeBend)
                g     = igraph::set_vertex_attr(g, "coordX",   value=nodeX)
                g     = igraph::set_vertex_attr(g, "coordY",   value=nodeY)
-               g     = igraph::set_vertex_attr(g, "nodeSize",   value=nodeSize)          
+               g     = igraph::set_vertex_attr(g, "nodeSize",   value=nodeSize)   
                g     = igraph::set_vertex_attr(g, "nodeShape",  value=nodeShape)
                g     = igraph::set_vertex_attr(g, "nodeColor",  value=nodeColor)
                g     = igraph::set_vertex_attr(g, "nodeWeight", value=nodeWeight)
                g     = igraph::set_vertex_attr(g, "nodeLineWidth",  value=nodeLineWidth)
                g     = igraph::set_vertex_attr(g, "nodeLineColor",  value=nodeLineColor)
                g     = igraph::set_vertex_attr(g, "nodeFontSize",   value=nodeFontSize)
-               g     = igraph::set_vertex_attr(g, "nodeFontColor",  value=nodeFontColor) 
+               g     = igraph::set_vertex_attr(g, "nodeFontColor",  value=nodeFontColor)
                g$zoom <- .rederpost(obj,'RedHandler.getZoom')
                #..get edge attrs. if present!
                if(!is.null(edges)){
@@ -1776,8 +1776,8 @@ setMethod ('nesthc', 'RedPort',
              }
              #get a basic layout just for graphs' first view
              if(is.null(gridRows)){
-               gbasic=igraph::make_empty_graph(n=nestcount,directed=FALSE)  
-               layout=igraph::norm_coords(igraph::layout.circle(gbasic), xmin = 25, xmax=75, ymin=25, ymax=75) 
+               gbasic=igraph::make_empty_graph(n=nestcount,directed=FALSE)
+               layout=igraph::norm_coords(igraph::layout.circle(gbasic), xmin = 25, xmax=75, ymin=25, ymax=75)
              } else {
                bin=100/(gridCols+1)
                xgrid=c(1:gridCols)*bin
@@ -1860,13 +1860,13 @@ setMethod ('nesthc', 'RedPort',
                  } else {
                    nestpack[[nestcount]]=nestNodes(obj, nodes, nestImage='plain', isAssigned=isAssigned, 
                                                    isAnchored=isAnchored, gscale=gs, gcoord=gc, gatt=gatt, theme=theme, 
-                                                   getpack=TRUE, .callchecks=FALSE)	 
+                                                   getpack=TRUE, .callchecks=FALSE)
                    nestcount=nestcount+1
                  }
                  returnIdList[[nid[i]]] <- nodes
                  stats=rbind(stats, data.frame(nid=nid[i],did=i,nest.size=length(nodes),
                                                leafdist=tm$leafdist[i],root.dist=tm$rootdist[i],height=tm$height[i],
-                                               nestroot.dist=selec[i],stringsAsFactors=FALSE))	    			
+                                               nestroot.dist=selec[i],stringsAsFactors=FALSE))		
                } else {
                  selec[i]=0 #remove container due to n. members<threashold!!
                }

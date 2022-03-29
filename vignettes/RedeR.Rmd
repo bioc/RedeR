@@ -30,16 +30,13 @@ knitr::include_graphics("fig1.png", dpi=300)
 
 # Quick Start
 
-##  Packages required in this vignette
-
 ```{r label='Load packages', eval=TRUE, message=FALSE}
-#--- Load packages
+#--- Load required packages
 library("RedeR")
 library("igraph")
-library("TreeAndLeaf")
 ``` 
 
-## Initializing the R-to-Java interface
+## Initializing the interface
 
 The RedeR/R package sets all details to initialize the R-to-Java interface. Next, the `RedPort()` constructor will create the `rdp` object, which will be used in all methods calling the RedeR/Java application.
 
@@ -55,7 +52,7 @@ Note that `r BiocStyle::pkg_ver("RedeR")` is designed to run on Java>=11 (see [s
 calld(rdp)
 ``` 
 
-## Using the *addGraph()* and *getGraph()* methods
+## Displaying graphs
 
 The `addGraph()` method displays *igraph* graphs in the *RedeR* application. The following snippet will display the `g1` graph in *RedeR*, using the `layout_with_kk()` function to set the network layout (**Figure \@ref(fig:fig2)**):
 
@@ -167,7 +164,7 @@ resetd(rdp)
 
 <br class="small">
 
-# Setting graph, node, and edge attributes
+## Command-line attributes
 
 *RedeR* attributes can be set either using the graphical user interface or the command-line interface. When using command-line attributes, these must follow `r BiocStyle::CRANpkg("igraph")` syntax rules and valid *RedeR*'s attribute names. Graph attributes are set directly on a graph using *igraph* shortcuts, while node and edge attributes are set using *igraph*'s `V()` and `E()` functions, respectivelly. For example:
 
@@ -312,6 +309,12 @@ This section provides two practical examples on how users might integrate its ow
 
 Start the *RedeR* application (*i.e.* run the `calld()` function), and then load the `ER.limma` and `hs.inter` datasets. The `ER.limma` is a data frame with results from a time-course differential expression analysis, listing differentially expressed (DE) genes from estrogen-treated MCF-7 cells for 0, 3, 6, and 12 hours (contrasts: t3-t0, t6-t0, and t12-t0). The `hs.inter` is an *igraph* graph derived from the Human Protein Reference Database (HPRD, release 9; https://www.hprd.org/). The next snippets will show a step-by-step preparation of three nested subgraphs to display in the *RedeR* application.
 
+```{r label='Workflow 1: Load required packages', eval=TRUE, message=FALSE}
+#--- Load required packages
+library("RedeR")
+library("igraph")
+``` 
+
 ```{r label='Workflow 1: Initialize the RedeR application', eval=TRUE}
 #--- If not running, initialize the ReadeR application
 # rdp <- RedPort()
@@ -412,9 +415,15 @@ selectNodes(rdp,"RET")
 knitr::include_graphics("fig5.png")
 ```
 
-## Nested networks and clustering
+## Nested networks
 
 This example will show a step-by-step preparation of a hierarchical network to display in the *RedeR* application. Please, load the `ER.deg` dataset and then get the `dat` and `ceg` objects. The `dat` object is a data frame listing DE genes with log2 fold change statistics (logFC), while the `ceg` object is an *igraph* graph with a co-expression gene network.
+
+```{r label='Workflow 2: Load required packages', eval=TRUE, message=FALSE}
+#--- Load required packages
+library("RedeR")
+library("igraph")
+``` 
 
 ```{r label='Workflow 2: Initialize the RedeR application', eval=TRUE}
 #--- If not running, initialize the ReadeR application
@@ -502,9 +511,16 @@ addLegend.size(rdp, sizevec=scl, labvec=leg, title="TFBS Distance (kb)")
 knitr::include_graphics("fig7.png")
 ```
 
-# Building a *tree-and-leaf* diagram
+## *Tree-and-leaf* diagrams
 
-The `r BiocStyle::Biocpkg("TreeAndLeaf")` package combines tree and force-directed layout algorithms for drawing binary trees, aiming to improve the visualization of dendrogram leaves. *RedeR* is used to display *tree-and-leaf* diagrams. Next we will transform the `hclust` object from **Figure \@ref(fig:fig6)** into a `tree-and-leaf` object, and then display **Figure \@ref(fig:fig8)** in the *RedeR* application. Please refer to the `r BiocStyle::Biocpkg("TreeAndLeaf")` package's documentation for additional details and examples.
+The `r BiocStyle::Biocpkg("TreeAndLeaf")` package combines tree and force-directed layout algorithms for drawing binary trees, aiming to improve the visualization of dendrogram leaves. *RedeR* is used to display *tree-and-leaf* diagrams. Next we will transform an `hclust` object into a `tree-and-leaf` object, and then display **Figure \@ref(fig:fig8)** in the *RedeR* application. Please refer to the `r BiocStyle::Biocpkg("TreeAndLeaf")` package's documentation for additional details and examples.
+
+```{r label='Workflow 3: Load TreeAndLeaf', eval=FALSE}
+#--- Load required packages
+library("RedeR")
+library("igraph")
+library("TreeAndLeaf")
+``` 
 
 ```{r label='Workflow 3: Initialize the RedeR application', eval=FALSE}
 #--- If not running, initialize the ReadeR application
@@ -513,17 +529,28 @@ The `r BiocStyle::Biocpkg("TreeAndLeaf")` package combines tree and force-direct
 resetd(rdp)
 ``` 
 
+```{r label='Workflow 2: hierarchical clustering', eval=FALSE}
+#-- Generate an 'hclust' object from the 'iris' dataset
+hc_iris <- hclust(dist(iris[,-5]))
+```
+
 ```{r label='Workflow 3: Create a tree-and-leaf object', eval=FALSE}
-#-- Convert the 'hclust' object from Fig6 into a 'tree-and-leaf' object
-tal <- treeAndLeaf(hc)
+#-- Convert the 'hclust' object into a 'tree-and-leaf' object
+tal <- treeAndLeaf(hc_iris)
 
-#--- Map attributes to the tree-and-leaf graph
-tal <- att.mapv(g = tal, dat = dat, refcol = 1)
+#--- Map 'iris' variables to the tree-and-leaf graph
+#Note: 'refcol = 0' indicates that 'iris' rownames will be used as mapping IDs
+tal <- att.mapv(g = tal, dat = iris, refcol = 0)
 
-#--- Set graph attributes using the 'att.setv' wrapper function
-tal <- att.setv(tal, from="Symbol", to="nodeAlias")
-tal <- att.setv(tal, from="logFC.t3", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)	
-tal <- att.setv(tal, from="ERbdist", to="nodeSize", nquant=10, isrev=TRUE, xlim=c(5,40,1))
+#--- Set node attributes using the 'att.setv' wrapper function
+cols <- c("#80b1d3","#fb8072","#8dd3c7")
+tal <- att.setv(tal, from="Species", to="nodeColor", cols=cols)
+tal <- att.setv(tal, from="Species", to="nodeLineColor", cols=cols)	
+tal <- att.setv(tal, from="Petal.Width", to="nodeSize", nquant=6, xlim=c(5,50,1))
+
+#--- Set other attributes using igraph shortcuts
+V(tal)$nodeAlias <- ""
+E(tal)$edgeColor <- "grey70"
 ``` 
 
 ```{r label='Workflow 3: Send the tal graph to RedeR', eval=FALSE}
@@ -531,14 +558,17 @@ tal <- att.setv(tal, from="ERbdist", to="nodeSize", nquant=10, isrev=TRUE, xlim=
 addGraph(rdp, tal)
 
 #--- Call 'relax' to fine-tune the leaf nodes
-relax(rdp, p1=10, p2=100, p3=1, p4=150, p5=1, p6=5, p7=20)
+relax(rdp, p1=10, p2=100, p3=1, p4=120, p5=1, p6=5, p7=20)
 
 #--- Add legends
-addLegend.color(rdp, tal, title="Diff. Gene Expression (logFC)")
-addLegend.size(rdp, tal, title="TFBS Distance (kb)")
+addLegend.color(rdp, tal, title="Species")
+addLegend.size(rdp, tal, title="PetalWidth", position="bottomright")
+
+#--- Suggestion: anchor inner nodes to adjust the final layout
+#selectNodes(rdp, V(tal)$name[!V(tal)$isLeaf], anchor=TRUE)
 ``` 
 
-```{r fig8, echo=FALSE, fig.cap="A tree-and-leaf diagram. This graph is obtained by transforming the *hclust* object from Fig6 into a *tree-and-leaf* object.", out.width = '50%'}
+```{r fig8, echo=FALSE, fig.cap="A tree-and-leaf diagram. This graph is obtained by transforming an *hclust* object into a *tree-and-leaf* object.", out.width = '70%'}
 knitr::include_graphics("fig8.png")
 ```
 
@@ -552,7 +582,7 @@ If you use *RedeR*, please cite:
 
 # Other useful links
 
-* Cardoso MA, Rizzardi LEA, Kume LW, Groeneveld C, Trefflich S, Morais DAA, Dalmolin RJS, Ponder BAJ, Meyer KB, Castro MAA. "TreeAndLeaf: an R/Bioconductor package for graphs and trees with focus on the leaves." *Bioinformatics*, 38(5):1463-1464, 2022. [Doi:10.1093/bioinformatics/btab819](https://doi.org/10.1093/bioinformatics/btab819)
+* Cardoso MA, Rizzardi LEA, Kume LW, Groeneveld C, Trefflich S, Morais DAA, Dalmolin RJS, Ponder BAJ, Meyer KB, Castro MAA. "TreeAndLeaf: an R/Bioconductor package for graphs and trees with focus on the leaves." *Bioinformatics*, 38(5):1463-1464, 2022. https://bioconductor.org/packages/TreeAndLeaf/
 
 * Csardi G and Nepusz T. “The Igraph Software Package for Complex Network Research.” *InterJournal*, ComplexSystems:1695, 2006. https://igraph.org
 
