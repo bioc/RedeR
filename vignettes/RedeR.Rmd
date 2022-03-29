@@ -303,7 +303,7 @@ summary(g2)
 
 # Workflow examples
 
-This section provides a few practical examples of how users might integrate its own pre-processed data into a network visualization and analysis workflow. Please refer to [Castro et al. (2016)](https://doi.org/10.1186/gb-2012-13-4-r29) and [Cardoso et al. (2021)](https://doi.org/10.1093/bioinformatics/btab819) for more details about the biological background and experimental design of each example.
+This section provides some practical examples of how users might integrate its own pre-processed data into a graph visualization workflow. Please refer to [Castro et al. (2016)](https://doi.org/10.1186/gb-2012-13-4-r29) and [Cardoso et al. (2021)](https://doi.org/10.1093/bioinformatics/btab819) for more details about the biological background and experimental design of each example.
 
 ## Subgraphs
 
