@@ -28,7 +28,7 @@ vignette: >
 knitr::include_graphics("fig1.png", dpi=300)
 ```
 
-# Quick Start
+# Quick start
 
 ```{r label='Load packages', eval=TRUE, message=FALSE}
 #--- Load required packages
@@ -164,7 +164,7 @@ resetd(rdp)
 
 <br class="small">
 
-## Command-line attributes
+# Command-line attributes
 
 *RedeR* attributes can be set either using the graphical user interface or the command-line interface. When using command-line attributes, these must follow `r BiocStyle::CRANpkg("igraph")` syntax rules and valid *RedeR*'s attribute names. Graph attributes are set directly on a graph using *igraph* shortcuts, while node and edge attributes are set using *igraph*'s `V()` and `E()` functions, respectivelly. For example:
 
