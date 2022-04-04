@@ -521,6 +521,7 @@ setMethod ('addGraph', 'RedPort',
              
              #Check layout option----------------------------------------------
              layoutOldNodes=TRUE
+             flagCoordXY=TRUE
              if(missing(layout)){
                b1 <- !is.null(V(g)$coordX) && !is.null(V(g)$coordY)
                b2 <- length(V(g)$coordX)==length(V(g)$coordY)
@@ -529,11 +530,13 @@ setMethod ('addGraph', 'RedPort',
                } else {
                  layout <- igraph::layout_randomly(g)
                  layoutOldNodes=FALSE
+                 flagCoordXY=FALSE
                }
              } else if(is.null(layout)){
                vattrbs <- igraph::vertex_attr_names(g)
                if("coordX"%in%vattrbs) g <- igraph::delete_vertex_attr(g,"coordX")
                if("coordY"%in%vattrbs) g <- igraph::delete_vertex_attr(g,"coordY")
+               flagCoordXY=FALSE
              }
              if(!is.null(layout)){
                if(!is.matrix(layout)){
@@ -603,7 +606,7 @@ setMethod ('addGraph', 'RedPort',
              #Add nodes, edges and set attributes (if available)------------------------
              if(igraph::vcount(g)>0)message("** ... nodes!") 
              if(igraph::ecount(g)>0)message("** ... edges!")
-             if(length(igraph::vertex_attr_names(g))>0){
+             if( length(igraph::vertex_attr_names(g))>3 || flagCoordXY){
                message('*** Uploading node attributes...')   
              }
              nodeAlias      = V(g)$nodeAlias 
@@ -647,7 +650,7 @@ setMethod ('addGraph', 'RedPort',
                  coordX=as.numeric(c(10,10))
                  coordY=as.numeric(c(10,10,10))
                } else {
-                 message("** ... node 'coords'") 
+                 if(flagCoordXY) message("** ... node 'coords'") 
                  coordX=as.numeric(coordX) 
                  coordY=as.numeric(coordY) 
                }      

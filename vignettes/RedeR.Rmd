@@ -170,14 +170,14 @@ resetd(rdp)
 
 ```{r label='Set new attributes', eval=TRUE}
 #--- Set a new graph attribute in 'g1'
-g1$bgColor <- 'black'
+g1$bgColor <- 'grey90'
 
 #--- Set new node attributes in 'g1'
-V(g1)$nodeColor <- "cyan"
+V(g1)$nodeColor <- "skyblue"
 V(g1)$nodeSize <- 50
 
 #--- Set new edge attributes in 'g1'
-E(g1)$edgeColor <- "cyan"
+E(g1)$edgeColor <- "skyblue"
 E(g1)$edgeWidth <- 10
 ``` 
 
@@ -243,11 +243,11 @@ V(g1)$name[1:5]
 g1 <-  att.addv(g1, to = "nodeFontSize", value = 20)
 
 #--- Same as above, but applied only to three nodes
-g1 <- att.addv(g1, to = "nodeFontSize", value = 50, 
+g1 <- att.addv(g1, to = "nodeFontSize", value = 70, 
               filter = list("name" = V(g1)$name[1:3]))
 
 #--- Add 'edgeType' attribute from a fixed value
-g1 <-  att.addv(g1, to = "edgeType", value = "DOTTED")
+g1 <-  att.adde(g1, to = "edgeType", value = "DOTTED")
 ```
 
 ```{r label='Check new attributes ', eval=TRUE}
@@ -291,10 +291,13 @@ g2 <- att.setv(g2, from="Symbol", to="nodeAlias")
 g2 <- att.setv(g2, from="logFC.t3", to="nodeColor", breaks=seq(-2,2,0.4), pal=2)
 
 # Set 'nodeSize' from 'ERbdist'
-g2 <- att.setv(g2, from="ERbdist", to="nodeSize", nquant=10, xlim=c(20,200,1))
+g2 <- att.setv(g2, from="ERbdist", to="nodeSize", nquant=10, xlim=c(20,100,1))
+
+# Set 'nodeFontSize' from 'ERbdist'
+g2 <- att.setv(g2, from="ERbdist", to="nodeFontSize", nquant=10, xlim=c(1,50,1))
 
 # Set 'edgeWidth' from 'weight'
-g2 <- att.sete(g2, from="weight", to="edgeWidth", nquant=5, xlim=c(1,50,1))
+g2 <- att.sete(g2, from="weight", to="edgeWidth", nquant=5, xlim=c(1,10,1))
 
 #--- Check the new attributes set in 'g2'
 summary(g2)
