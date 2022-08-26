@@ -44,6 +44,14 @@ img {
   border-width: 2px;
 }
 
+p.caption {
+    display:block;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin:auto;
+    width:80%;
+}
+
 table {
   margin: auto;
   border-top: 1px solid #7b8a8b;
