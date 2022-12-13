@@ -285,7 +285,7 @@ g2 <- att.mapv(g=g2, dat=df, refcol=0)
 summary(g2)
 ``` 
 
-Note that new names were included in the `g2` graph, but these names are not valid *RedeR*'s attributes yet. Next, the `att.setv()` amd `att.sete()` functions are used to transform different data types into valid attributes.
+Note that new names were included in the `g2` graph, but these names are not valid *RedeR*'s attributes yet. Next, the `att.setv()` and `att.sete()` functions are used to transform different data types into valid attributes.
 
 ```{r label='Using att.setv and att.sete wrapper functions', eval=TRUE}
 # Set 'nodeAlias' from 'Symbol'
@@ -314,7 +314,7 @@ This section provides some practical examples of how users might integrate its o
 
 ## Subgraphs
 
-Start the *RedeR* application (*i.e.* run the `calld()` function), and then load the `ER.limma` and `hs.inter` datasets. The `ER.limma` is a data frame with results from a time-course differential expression analysis, listing differentially expressed (DE) genes from estrogen-treated MCF-7 cells for 0, 3, 6, and 12 hours (contrasts: t3-t0, t6-t0, and t12-t0). The `hs.inter` is an *igraph* graph derived from the Human Protein Reference Database (HPRD, release 9; https://www.hprd.org/). The next snippets will show a step-by-step preparation of three nested subgraphs to display in the *RedeR* application.
+Start the *RedeR* application (*i.e.* run the `calld()` function), and then load the `ER.limma` and `hs.inter` datasets. The `ER.limma` is a data frame with results from a time-course differential expression analysis, listing differentially expressed (DE) genes from estrogen-treated MCF-7 cells for 0, 3, 6, and 12 hours (contrasts: t3-t0, t6-t0, and t12-t0). The `hs.inter` is an *igraph* graph derived from the Human Protein Reference Database (HPRD, release 9; https://www.hprd.org/). The next snippets list a step-by-step preparation of three nested subgraphs to display in the *RedeR* application.
 
 ```{r label='Workflow 1: Load required packages', eval=TRUE, message=FALSE}
 #--- Load required packages
@@ -372,7 +372,7 @@ gt6$nestAlias <- "6h"
 gt12$nestAlias <- "12h"
 ``` 
 
-Now use the `addGraph()` function to send the subgraphs to the *RedeR* application, nesting into containers. This should start building the nested network depicted in **Figure \@ref(fig:fig6)**. The `addGraph()` function will return the container IDs, `N1` to `N5`, which will be used to identify graph parents.
+Now use the `addGraph()` function to send the three subgraphs to the *RedeR* application, nesting them into containers. This should start building the nested network depicted in **Figure \@ref(fig:fig6)**. The `addGraph()` function will return the container IDs, `N1` to `N5`, which will be used to identify graph parents.
 
 ```{r label='Workflow 1: Send subgraphs to the RedeR application', eval=TRUE}
 #--- Send nested subgraphs to the RedeR application
@@ -415,7 +415,7 @@ Next, the `selectNodes()` function will zoom-in on the *RET* gene at different t
 
 ```{r label='Workflow 1: Select a gene', eval=TRUE}
 selectNodes(rdp,"RET")
-#repeat this line to see RET in all instances
+#repeat this line to see RET in all graph instances
 ``` 
 
 ```{r fig6, echo=FALSE, fig.cap="Nested subnetworks. This graph shows genes differentially expressed in estrogen-treated MCF-7 cells at 3, 6 and 12 h (relative to 0 h). The insets correspond to the overlap between consecutive time points. Adapted from Castro *et al.* (2012, https://doi.org/10.1186/gb-2012-13-4-r29).", out.width = '70%'}
