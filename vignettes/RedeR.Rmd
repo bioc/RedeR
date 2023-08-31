@@ -1,10 +1,10 @@
 ---
 title: "*RedeR*: bridging network analysis and visualization"
-author: "Mauro A.A. Castro, Xin Wang, Michael N.C. Fletcher, Kerstin B. Meyer and Florian Markowetz."
+author: "Mauro A.A. Castro, Xin Wang, Michael N.C. Fletcher, Kerstin B. Meyer, and Florian Markowetz."
 date: "`r BiocStyle::doc_date()`"
 package: RedeR
 bibliography: bibliography.bib
-abstract: <p>*RedeR* is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of nested networks. Graph, node, and edge attributes are set either using graphical or command-line methods following `r BiocStyle::CRANpkg("igraph")` syntax rules. The RedeR/R package sets all details to initialize the R-to-Java interface, which uses an interactive force-directed layout algorithm, adjusting the graph layout to the hierarchical levels of a nested network. Supporting information is available at [Castro et al. (2016)](https://doi.org/10.1186/gb-2012-13-4-r29).</p>
+abstract: <p>*RedeR* is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of nested networks. Graph, node, and edge attributes are set either using graphical or command-line methods following `r BiocStyle::CRANpkg("igraph")` syntax rules. The RedeR/R package sets all details to initialize the R-to-Java interface, which uses an interactive force-directed layout algorithm, adjusting the graph layout to the hierarchical levels of a nested network. Supporting information is available from [Castro et al. (2016)](https://doi.org/10.1186/gb-2012-13-4-r29).</p>
 output:
   BiocStyle::html_document:
     theme: flatly
