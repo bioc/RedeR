@@ -584,14 +584,14 @@ knitr::include_graphics("fig9.png")
 
 If you use *RedeR*, please cite:
 
-* Castro MA, Wang X, Fletcher MN, Meyer KB, Markowetz F (2012). “RedeR: R/Bioconductor package for representing modular structures, nested networks and multiple levels of hierarchical associations.” *Genome Biology*, 13(4), R29. [Doi:10.1186/gb-2012-13-4-r29](https://doi.org/10.1186/gb-2012-13-4-r29).
+* Castro MA, Wang X, Fletcher MN, Meyer KB, Markowetz F (2012). "RedeR: R/Bioconductor package for representing modular structures, nested networks and multiple levels of hierarchical associations." *Genome Biology*, 13(4), R29. [Doi:10.1186/gb-2012-13-4-r29](https://doi.org/10.1186/gb-2012-13-4-r29).
 
 
 # Other useful links
 
 * Cardoso MA, Rizzardi LEA, Kume LW, Groeneveld C, Trefflich S, Morais DAA, Dalmolin RJS, Ponder BAJ, Meyer KB, Castro MAA. "TreeAndLeaf: an R/Bioconductor package for graphs and trees with focus on the leaves." *Bioinformatics*, 38(5):1463-1464, 2022. https://bioconductor.org/packages/TreeAndLeaf/
 
-* Csardi G and Nepusz T. “The Igraph Software Package for Complex Network Research.” *InterJournal*, ComplexSystems:1695, 2006. https://igraph.org
+* Csardi G and Nepusz T. "The Igraph Software Package for Complex Network Research." *InterJournal*, ComplexSystems:1695, 2006. https://igraph.org
 
 
 # System requirements{#system-requirements}

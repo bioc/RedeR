@@ -2,6 +2,15 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
+\section{Version 2.6.0}{
+  \itemize{
+    \item Major code refactoring.
+    \item Improved readability.
+    \item Reduced code complexities.
+    \item Improved compatibility with standard igraph attributes.
+  }
+}
+
 \section{Version 2.4.0}{
   \itemize{
     \item Regular maintenance, stable release.

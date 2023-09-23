@@ -10,7 +10,7 @@ RedeR's hierarchical force-directed interactive layout.
 
 \usage{
 relax(obj, p1=100, p2=100, p3=100, p4=100, p5=100, p6=10,
-p7=10, p8=100, p9=10, ps=FALSE)
+p7=10, p8=100, p9=10)
 }
 
 \arguments{
@@ -24,7 +24,6 @@ p7=10, p8=100, p9=10, ps=FALSE)
   \item{p7}{Central pull (arbitrary unities; >= 0 ) <numeric>. }    
   \item{p8}{Nest-nest edge target length, i.e., edge target between linked containers (in pixels; >= 1 ) <numeric>. }
   \item{p9}{Nest-node repulsion factor, i.e., repulsion among containers and out-nodes (arbitrary unities; >= 0 ) <numeric>. }
-  \item{ps}{Deprecated parameter. }
 }
 
 \details{

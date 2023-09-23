@@ -50,12 +50,8 @@ exportMethods (
                   
   isRelaxActive,
   exitd,
-  resetd,
+  resetd
   
-  duplicateGraph,
-  addSubgraph,
-  addSubgraph.list,
-  addSeries
   )
 
 export(
