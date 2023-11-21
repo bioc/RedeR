@@ -1,8 +1,15 @@
-.onAttach<-function(libname, pkgname){
-  version <- utils::packageVersion("RedeR")
-  msg <- paste("***This is RedeR ",version,
-  "! For a quick start, please type 'vignette('RedeR')'.
-   Supporting information is available at Genome Biology 13:R29, 2012,
-   (doi:10.1186/gb-2012-13-4-r29). \n",sep="")
-  packageStartupMessage(msg,appendLF=FALSE)
+.onAttach <- function(libname = find.package("RedeR"),
+  pkgname = "RedeR"){
+  version <- packageVersion("RedeR")
+  msg <- paste("***This is RedeR ",version,"! ",
+  "For a quick start, type vignette('RedeR').\n",sep="")
+  packageStartupMessage(msg, appendLF = FALSE)
+}
+
+.onLoad <- function(libname = find.package("RedeR"),
+  pkgname = "RedeR"){
+  opt <- list()
+  opt$port <- RedPort()
+  opt$unit <- "point"
+  options( RedeR = opt )
 }

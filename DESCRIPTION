@@ -1,16 +1,38 @@
 Package: RedeR
 Type: Package
 Title: Interactive visualization and manipulation of nested networks
-Version: 2.7.0
-Author: Mauro Castro, Xin Wang, Florian Markowetz
-Maintainer: Mauro Castro <mauro.a.castro@gmail.com>
+Version: 2.99.0
+Authors@R: 
+    c(person("Xin", "Wang", role = "ctb"),
+      person("Florian", "Markowetz", role = "ctb"),
+      person("Mauro", "Castro", role = c("aut", "cre"),
+              email = "mauro.a.castro@gmail.com",
+              comment = c(ORCID = "0000-0003-4942-8131")))
 Depends: R (>= 4.0), methods
-Imports: igraph
-Suggests: BiocStyle, knitr, rmarkdown, markdown, TreeAndLeaf
-SystemRequirements: Java Runtime Environment (Java>= 11)
+Imports: grDevices, utils, scales, stats, igraph
+Suggests: knitr, rmarkdown, markdown, BiocStyle, TreeAndLeaf
 Description: RedeR is an R-based package combined with a stand-alone Java application for interactive visualization and manipulation of nested networks.
-License: GPL (>= 3)
+License: GPL-3
 biocViews: GUI, GraphAndNetwork, Network, NetworkEnrichment, NetworkInference, Software, SystemsBiology
 VignetteBuilder: knitr
 URL: http://genomebiology.com/2012/13/4/R29
-LazyLoad: yes
+Collate:
+    AllChecks.R
+    AllValidations.R
+    AllClasses.R
+    AllGenerics.R
+    internalLegendMethods.R
+    internalOtherMethods.R
+    exportedCallMethods.R
+    exportedOtherMethods.R
+    exportedAddGraphMethods.R
+    exportedGetGraphMethods.R
+    exportedRelaxMethods.R
+    exportedNestMethods.R
+    exportedAttributeSeters.R
+    exportedWrappers.R
+    deprecatedFunctions.R
+    Misc.R
+    zzz.R
+Encoding: UTF-8
+RoxygenNote: 7.2.3

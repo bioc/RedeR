@@ -2,6 +2,15 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
+\section{Version 3.0.0}{
+  \itemize{
+    \item Major code refactoring.
+    \item Improved readability.
+    \item Reduced code complexities.
+    \item Improved compatibility with standard base graphics.
+  }
+}
+
 \section{Version 2.6.0}{
   \itemize{
     \item Major code refactoring.
