@@ -5,14 +5,11 @@
 \alias{selectEdges,character-method}
 \alias{selectEdges}
 \alias{selectEdges,data.frame-method}
-\alias{selectEdges,RedPort-method}
 \title{selectEdges}
 \usage{
-\S4method{selectEdges}{character}(edges)
+\S4method{selectEdges}{character}(edges, ...)
 
-\S4method{selectEdges}{data.frame}(edges)
-
-\S4method{selectEdges}{RedPort}(edges, ...)
+\S4method{selectEdges}{data.frame}(edges, ...)
 }
 \arguments{
 \item{edges}{A vertex sequence <vector of strings> or data frame of ncol=2.}

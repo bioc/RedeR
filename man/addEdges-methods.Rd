@@ -5,14 +5,11 @@
 \alias{addEdges,character-method}
 \alias{addEdges}
 \alias{addEdges,data.frame-method}
-\alias{addEdges,RedPort-method}
 \title{addEdges}
 \usage{
-\S4method{addEdges}{character}(edges)
+\S4method{addEdges}{character}(edges, ...)
 
-\S4method{addEdges}{data.frame}(edges)
-
-\S4method{addEdges}{RedPort}(edges, ...)
+\S4method{addEdges}{data.frame}(edges, ...)
 }
 \arguments{
 \item{edges}{A vertex sequence <vector of strings> or data frame of ncol=2.}

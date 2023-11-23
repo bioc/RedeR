@@ -5,14 +5,11 @@
 \alias{deleteEdges,character-method}
 \alias{deleteEdges}
 \alias{deleteEdges,data.frame-method}
-\alias{deleteEdges,RedPort-method}
 \title{deleteEdges}
 \usage{
-\S4method{deleteEdges}{character}(edges)
+\S4method{deleteEdges}{character}(edges, ...)
 
-\S4method{deleteEdges}{data.frame}(edges)
-
-\S4method{deleteEdges}{RedPort}(edges, ...)
+\S4method{deleteEdges}{data.frame}(edges, ...)
 }
 \arguments{
 \item{edges}{A vertex sequence <vector of strings> or data frame of ncol=2.}

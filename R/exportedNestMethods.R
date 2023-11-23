@@ -36,7 +36,7 @@
 #' It must be used with 'isAssign=TRUE'.
 #' @param verbose A logical value specifying to display detailed messages
 #' (when verbose=TRUE) or not (when verbose=FALSE).
-#' @param ... Arguments passed to internal checks (ignore).
+#' @param rdp A \code{RedPort}-class object used by internal calls (ignore).
 #' @return Add/change graph objects.
 #' @author Sysbiolab.
 #' @seealso \code{\link{addGraphToRedeR}}, \code{\link{getGraphFromRedeR}}.
@@ -83,12 +83,12 @@ setMethod(
     function(nodes, isAssigned = TRUE, isAnchored = TRUE, gscale = 40,
         gcoord = c(50, 50), status = c("plain", "hide", "transparent"),
         theme = c("th0", "th1", "th2", "th3"), gatt = list(),
-        parent = NULL, verbose = TRUE, ...) {
+        parent = NULL, verbose = TRUE, rdp = NA) {
 
-        .check.port.opt(as.list(environment()))
-
-        rdp <- getOption("RedeR")$port
-        if (!is(rdp, "RedPort")) rdp <- RedPort()
+        if (!is(rdp, "RedPort")){
+            rdp <- getOption("RedeR")$port
+            if (!is(rdp, "RedPort")) rdp <- RedPort()
+        }
         if (ping(rdp) == 0) {
             return(invisible())
         }
@@ -286,37 +286,9 @@ setMethod(
 
         invisible(.updateGraph(rdp))
 
-        .nestNodes_deprecated_args(... = ...)
-
         return(ref)
     }
 )
-#' @import methods
-#' @docType methods
-#' @rdname nestNodes-methods
-#' @aliases nestNodes
-#' @export
-setMethod(
-    "nestNodes", "RedPort",
-    function(nodes, ...) {
-        stop("'nestNodes' no longer requires a RedPort-class object.",
-            call. = FALSE)
-    }
-)
-.nestNodes_deprecated_args <- function(
-    gzoom = NA, loadEdges = NA, ntransform = NA,
-    nestImage, getpack) {
-    args <- rep(0, 2)
-    names(args) <- c("'nestImage'", "'getpack'")
-    if (missing(nestImage)) args["'nestImage'"] <- NA
-    if (missing(getpack)) args["'getpack'"] <- NA
-    args <- args[!is.na(args)]
-    if (length(args) > 0) {
-        args <- paste0(names(args), collapse = ", ")
-        msg <- "Deprecated 'nestNodes' args: "
-        warning(msg, args, call. = FALSE)
-    }
-}
 
 #-------------------------------------------------------------------------------
 #' @title mergeOutEdges
@@ -331,6 +303,7 @@ setMethod(
 #' combining the out-edges.
 #' @param lb Custom lower bound to rescale edge width between containers.
 #' @param ub Custom upper bound to rescale edge width between containers.
+#' @param rdp A \code{RedPort}-class object used by internal calls (ignore).
 #' @return Add/change edge assigments.
 #' @author Sysbiolab.
 #' @seealso \code{\link{addGraphToRedeR}}, \code{\link{getGraphFromRedeR}}.
@@ -344,10 +317,9 @@ setMethod(
 #' V(g)$name <- paste0("n", 1:5)
 #'
 #' \donttest{
-#' # Load RedeR and igraph
-#' library(RedeR)
-#' library(igraph)
-#'
+#' # Start the RedeR interface
+#' startRedeR()
+#' 
 #' # Add 'g' to the interface
 #' addGraphToRedeR(g, layout.kamada.kawai(g))
 #'
@@ -358,37 +330,40 @@ setMethod(
 #' # Merge nodes between containers
 #' mergeOutEdges()
 #' }
-#'
-#' @name mergeOutEdges
+#' 
+#' @docType methods
+#' @rdname mergeOutEdges-methods
 #' @aliases mergeOutEdges
 #' @export
-mergeOutEdges <- function(nlevels = 2, rescale = TRUE,
-    lb = NA, ub = NA) {
-
-    .check.port.opt(as.list(environment()))
-
-    .validate.args("singleNumber", "nlevels", nlevels)
-    .validate.args("singleLogical", "rescale", rescale)
-    if (!is.na(lb)) .validate.args("singleNumber", "lb", lb)
-    if (!is.na(ub)) .validate.args("singleNumber", "ub", ub)
-    if (nlevels < 1) nlevels <- 1
-    if (is.na(lb) || is.na(ub) || !rescale) {
-        lb <- 0; ub <- 0
-    } else {
-        lb <- max(lb, 0)
-        ub <- max(ub, 0)
+#'
+setMethod("mergeOutEdges", c("numeric_Or_missing"), 
+    function(nlevels = 2, rescale = TRUE, lb = NA, 
+        ub = NA, rdp = NA) {
+        
+        if (!is(rdp, "RedPort")){
+            rdp <- getOption("RedeR")$port
+            if (!is(rdp, "RedPort")) rdp <- RedPort()
+        }
+        if (ping(rdp) == 0) {
+            return(invisible())
+        }
+        
+        .validate.args("singleNumber", "nlevels", nlevels)
+        .validate.args("singleLogical", "rescale", rescale)
+        if (!is.na(lb)) .validate.args("singleNumber", "lb", lb)
+        if (!is.na(ub)) .validate.args("singleNumber", "ub", ub)
+        if (nlevels < 1) nlevels <- 1
+        if (is.na(lb) || is.na(ub) || !rescale) {
+            lb <- 0; ub <- 0
+        } else {
+            lb <- max(lb, 0)
+            ub <- max(ub, 0)
+        }
+        rescale <- ifelse(rescale, "true", "false")
+        for (i in seq_len(nlevels)) {
+            res <- .rederexpresspost(obj = rdp,
+                "RedHandler.mergeContainerOutEdges", rescale, lb, ub)
+        }
+        
     }
-    .mergeOutEdges(nlevels, rescale, lb, ub)
-}
-.mergeOutEdges <- function(nlevels, rescale, lb, ub) {
-    rdp <- getOption("RedeR")$port
-    if (!is(rdp, "RedPort")) rdp <- RedPort()
-    if (ping(rdp) == 0) {
-        return(invisible())
-    }
-    rescale <- ifelse(rescale, "true", "false")
-    for (i in seq_len(nlevels)) {
-        res <- .rederexpresspost(obj = rdp,
-            "RedHandler.mergeContainerOutEdges", rescale, lb, ub)
-    }
-}
+)

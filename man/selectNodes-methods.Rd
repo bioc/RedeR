@@ -4,12 +4,9 @@
 \name{selectNodes,character-method}
 \alias{selectNodes,character-method}
 \alias{selectNodes}
-\alias{selectNodes,RedPort-method}
 \title{selectNodes}
 \usage{
-\S4method{selectNodes}{character}(nodes, anchor = FALSE, nid = NULL)
-
-\S4method{selectNodes}{RedPort}(nodes, ...)
+\S4method{selectNodes}{character}(nodes, anchor = FALSE, nid = NULL, ...)
 }
 \arguments{
 \item{nodes}{A string or array of strings with node names.}

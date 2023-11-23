@@ -4,12 +4,9 @@
 \name{addNodes,character-method}
 \alias{addNodes,character-method}
 \alias{addNodes}
-\alias{addNodes,RedPort-method}
 \title{addNodes}
 \usage{
-\S4method{addNodes}{character}(nodes)
-
-\S4method{addNodes}{RedPort}(nodes, ...)
+\S4method{addNodes}{character}(nodes, ...)
 }
 \arguments{
 \item{nodes}{A vector with node names.}

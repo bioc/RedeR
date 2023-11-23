@@ -4,12 +4,9 @@
 \name{deleteNodes,character-method}
 \alias{deleteNodes,character-method}
 \alias{deleteNodes}
-\alias{deleteNodes,RedPort-method}
 \title{deleteNodes}
 \usage{
-\S4method{deleteNodes}{character}(nodes)
-
-\S4method{deleteNodes}{RedPort}(nodes, ...)
+\S4method{deleteNodes}{character}(nodes, ...)
 }
 \arguments{
 \item{nodes}{A vector with node names.}

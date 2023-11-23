@@ -317,12 +317,8 @@ setMethod(
         }
 
         if (isNested) {
-            rdp <- getOption("RedeR")$port
-            if (!identical(obj, rdp)) {
-                options(RedPort = obj)
-            }
             refid <- nestNodes(nodes, gscale = gscale, gatt = gatt,
-                verbose = verbose, ... = ...)
+                verbose = verbose, rdp = obj, ... = ...)
         }
 
         invisible(.updateGraph(obj))

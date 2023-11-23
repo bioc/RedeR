@@ -21,9 +21,6 @@ setGeneric('addGraph', signature = 'obj', function(obj, ...)
 setGeneric('getGraph', signature = 'obj', function(obj, ...)
     standardGeneric('getGraph'), package = 'RedeR')
 #-------------------------------------------------------------------------------
-setGeneric('nestNodes', signature = 'nodes', function(nodes, ...)
-    standardGeneric('nestNodes'), package = 'RedeR')
-#-------------------------------------------------------------------------------
 setGeneric('addNodes', signature = 'nodes', function(nodes, ...)
     standardGeneric('addNodes'), package = 'RedeR')
 setGeneric('addEdges', signature = 'edges', function(edges, ...)
@@ -38,6 +35,12 @@ setGeneric('deleteNodes', signature = 'nodes', function(nodes, ...)
     standardGeneric('deleteNodes'), package = 'RedeR')
 setGeneric('deleteEdges', signature = 'edges', function(edges, ...)
     standardGeneric('deleteEdges'), package = 'RedeR')
+#-------------------------------------------------------------------------------
+setGeneric('nestNodes', signature = 'nodes', function(nodes, ...)
+    standardGeneric('nestNodes'), package = 'RedeR')
+#-------------------------------------------------------------------------------
+setGeneric('mergeOutEdges', signature = 'nlevels', function(nlevels = 2, ...)
+    standardGeneric('mergeOutEdges'), package = 'RedeR')
 
 ################################################################################
 ### Internal Methods (not exported generics)

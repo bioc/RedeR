@@ -29,8 +29,11 @@
 #' @export
 setMethod(
     "addNodes", "character",
-    function(nodes) {
+    function(nodes, ...) {
 
+        .check.port.opt("addNodes", as.list(environment()), 
+            list(...=...))
+        
         .validate.args("allCharacter", "nodes", nodes)
 
         rdp <- getOption("RedeR")$port
@@ -40,17 +43,6 @@ setMethod(
         } else {
             return(invisible())
         }
-    }
-)
-#' @import methods
-#' @docType methods
-#' @rdname addNodes-methods
-#' @aliases addNodes
-#' @export
-setMethod("addNodes", "RedPort",
-    function(nodes, ...) {
-        stop(" 'addNodes' no longer requires a RedPort-class object.",
-            call. = FALSE)
     }
 )
 
@@ -91,8 +83,11 @@ setMethod("addNodes", "RedPort",
 #' @export
 setMethod(
     "addEdges", "character",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("addEdges", as.list(environment()), 
+            list(...=...))
+        
         .validate.args("allCharacter", "edges", edges)
 
         rdp <- getOption("RedeR")$port
@@ -110,8 +105,11 @@ setMethod(
 #' @aliases addEdges
 setMethod(
     "addEdges", "data.frame",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("addEdges", as.list(environment()), 
+            list(...=...))
+        
         if (ncol(edges) != 2) {
             stop("Edges must be provided as a 2-column 'data.frame'")
         }
@@ -126,16 +124,6 @@ setMethod(
         } else {
             return(invisible())
         }
-    }
-)
-#' @import methods
-#' @docType methods
-#' @rdname addEdges-methods
-#' @aliases addEdges
-setMethod("addEdges", "RedPort",
-    function(edges, ...) {
-        stop("'addEdges' no longer requires a RedPort-class object.",
-            call. = FALSE)
     }
 )
 
@@ -173,8 +161,11 @@ setMethod("addEdges", "RedPort",
 #' @export
 setMethod(
     "deleteNodes", "character",
-    function(nodes) {
+    function(nodes, ...) {
 
+        .check.port.opt("deleteNodes", as.list(environment()), 
+            list(...=...))
+        
         .validate.args("allCharacter", "nodes", nodes)
 
         rdp <- getOption("RedeR")$port
@@ -184,17 +175,6 @@ setMethod(
         } else {
             return(invisible())
         }
-    }
-)
-#' @import methods
-#' @docType methods
-#' @rdname deleteNodes-methods
-#' @aliases deleteNodes
-#' @export
-setMethod("deleteNodes", "RedPort",
-    function(nodes, ...) {
-        stop(" 'deleteNodes' no longer requires a RedPort-class object.",
-            call. = FALSE)
     }
 )
 
@@ -234,8 +214,11 @@ setMethod("deleteNodes", "RedPort",
 #' @aliases deleteEdges
 setMethod(
     "deleteEdges", "character",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("deleteEdges", as.list(environment()), 
+            list(...=...))
+        
         .validate.args("allCharacter", "edges", edges)
 
         rdp <- getOption("RedeR")$port
@@ -254,8 +237,11 @@ setMethod(
 #' @export
 setMethod(
     "deleteEdges", "data.frame",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("deleteEdges", as.list(environment()), 
+            list(...=...))
+        
         if (ncol(edges) != 2) {
             stop("Edges must a 'vector' or a 2-column 'data.frame'")
         }
@@ -270,16 +256,6 @@ setMethod(
         } else {
             return(invisible())
         }
-    }
-)
-#' @import methods
-#' @docType methods
-#' @rdname deleteEdges-methods
-#' @aliases deleteEdges
-setMethod("deleteEdges", "RedPort",
-    function(edges, ...) {
-        stop(" 'deleteEdges' no longer requires a RedPort-class object.",
-            call. = FALSE)
     }
 )
 
@@ -324,9 +300,10 @@ setMethod("deleteEdges", "RedPort",
 #' @export
 setMethod(
     "selectNodes", "character",
-    function(nodes, anchor = FALSE, nid = NULL) {
+    function(nodes, anchor = FALSE, nid = NULL, ...) {
 
-        .check.port.opt(as.list(environment()))
+        .check.port.opt("selectNodes", as.list(environment()), 
+            list(...=...))
 
         .validate.args("allCharacter", "nodes", nodes)
         .validate.args("singleLogical", "anchor", anchor)
@@ -350,17 +327,6 @@ setMethod(
                 rdp, "RedHandler.selectNodeString", nodes, anchor, nid
             ))
         }
-    }
-)
-#' @import methods
-#' @docType methods
-#' @rdname selectNodes-methods
-#' @aliases selectNodes
-#' @export
-setMethod("selectNodes", "RedPort",
-    function(nodes, ...) {
-        stop(" 'selectNodes' no longer requires a RedPort-class object.",
-            call. = FALSE)
     }
 )
 
@@ -401,8 +367,11 @@ setMethod("selectNodes", "RedPort",
 #' @export
 setMethod(
     "selectEdges", "character",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("selectEdges", as.list(environment()), 
+            list(...=...))
+        
         .validate.args("allCharacter", "edges", edges)
 
         rdp <- getOption("RedeR")$port
@@ -422,8 +391,11 @@ setMethod(
 #' @export
 setMethod(
     "selectEdges", "data.frame",
-    function(edges) {
+    function(edges, ...) {
 
+        .check.port.opt("selectEdges", as.list(environment()), 
+            list(...=...))
+        
         if (ncol(edges) != 2) {
             stop("Edges must be provided as a 2-column 'data.frame'")
         }
@@ -441,29 +413,18 @@ setMethod(
         invisible(.rederexpresspost(rdp, "RedHandler.selectEdges", edges))
     }
 )
-#' @import methods
-#' @docType methods
-#' @rdname selectEdges-methods
-#' @aliases selectEdges
-#' @export
-setMethod("selectEdges", "RedPort",
-    function(edges, ...) {
-        stop("'selectEdges' no longer requires a RedPort-class object.",
-            call. = FALSE)
-    }
-)
 
 #-------------------------------------------------------------------------------
-.check.port.opt <- function(lst) {
+.check.port.opt <- function(method, env, dots) {
+    lst <- c(env, dots)
     if (length(lst) > 0) {
         lst <- lapply(lst, function(lt) {
             is(lt, "RedPort")
         })
         if (any(unlist(lst))) {
-            stop(
-              " a 'RedPort-class' object is no longer required on this call.",
-                call. = FALSE
-            )
+            msg <- paste0("'", method,
+                "' no longer requires a RedPort-class object")
+            stop(msg, call. = FALSE)
         }
     }
 }

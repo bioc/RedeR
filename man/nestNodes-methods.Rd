@@ -4,7 +4,6 @@
 \name{nestNodes,character-method}
 \alias{nestNodes,character-method}
 \alias{nestNodes}
-\alias{nestNodes,RedPort-method}
 \title{nestNodes}
 \usage{
 \S4method{nestNodes}{character}(
@@ -18,10 +17,8 @@
   gatt = list(),
   parent = NULL,
   verbose = TRUE,
-  ...
+  rdp = NA
 )
-
-\S4method{nestNodes}{RedPort}(nodes, ...)
 }
 \arguments{
 \item{nodes}{A vector with node names available in the RedeR app.}
@@ -66,7 +63,7 @@ It must be used with 'isAssign=TRUE'.}
 \item{verbose}{A logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE).}
 
-\item{...}{Arguments passed to internal checks (ignore).}
+\item{rdp}{A \code{RedPort}-class object used by internal calls (ignore).}
 }
 \value{
 Add/change graph objects.
