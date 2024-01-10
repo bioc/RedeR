@@ -45,7 +45,6 @@
 #' @importFrom igraph delete_edges delete_vertices any_multiple
 #' @importFrom igraph graph_attr_names graph_attr add_vertices norm_coords
 #' @importFrom igraph 'graph_attr<-' 'vertex_attr<-'
-#' @importFrom grDevices colorRampPalette
 #' @docType methods
 #' @rdname addGraph-methods
 #' @aliases addGraph
@@ -117,7 +116,8 @@ setMethod(
         g <- .set.gscale(obj, g, gscale, zoom)
 
         if (.is_singleColor(bgcolor)) {
-            bgcolor <- colorRampPalette(bgcolor, alpha = TRUE)(length(bgcolor))
+            bgcolor <- grDevices::colorRampPalette(bgcolor, 
+              alpha = TRUE)(length(bgcolor))
             message("** Setting graph background 'color'...")
             invisible(
               .rederexpresspost(obj, "RedHandler.setBackground", bgcolor)
@@ -186,7 +186,7 @@ setMethod(
         if (anyNA(nodeColor)) {
             nodeColor <- character(2)
         } else {
-            nodeColor <- colorRampPalette(nodeColor,
+            nodeColor <- grDevices::colorRampPalette(nodeColor,
                 alpha = TRUE)(length(nodeColor))
             if (verbose) message("...node 'color'")
         }
@@ -206,7 +206,7 @@ setMethod(
         if (anyNA(nodeLineColor)) {
             nodeLineColor <- character(2)
         } else {
-            nodeLineColor <- colorRampPalette(nodeLineColor,
+            nodeLineColor <- grDevices::colorRampPalette(nodeLineColor,
                 alpha = TRUE)(length(nodeLineColor))
             if (verbose) message("...node 'line color'")
         }
@@ -220,7 +220,7 @@ setMethod(
         if (anyNA(nodeLabelColor)) {
             nodeLabelColor <- character(2)
         } else {
-            nodeLabelColor <- colorRampPalette(nodeLabelColor,
+            nodeLabelColor <- grDevices::colorRampPalette(nodeLabelColor,
                 alpha = TRUE)(length(nodeLabelColor))
             if (verbose) message("...node 'label color'")
         }
@@ -260,7 +260,7 @@ setMethod(
         if (anyNA(edgeLineColor)) {
             edgeLineColor <- character(2)
         } else {
-            edgeLineColor <- colorRampPalette(edgeLineColor,
+            edgeLineColor <- grDevices::colorRampPalette(edgeLineColor,
                 alpha = TRUE)(length(edgeLineColor))
             if (verbose) message("...edge 'line color'")
         }

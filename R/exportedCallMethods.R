@@ -25,8 +25,6 @@
 #'
 #' @name RedPort
 #' @aliases RedPort
-#' @importFrom utils close.socket make.socket read.socket setTxtProgressBar
-#' @importFrom utils txtProgressBar write.socket
 #' @export
 RedPort <- function(title = 'default', host = '127.0.0.1',
     port = 9091, checkJava = FALSE) {
@@ -66,7 +64,6 @@ RedPort <- function(title = 'default', host = '127.0.0.1',
 #' calld(rdp)
 #' }
 #'
-#' @importFrom utils packageVersion
 #' @docType methods
 #' @rdname calld-methods
 #' @aliases calld
@@ -115,9 +112,9 @@ setMethod(
             status <- "OFF"
             tdelta <- 0
             t0 <- proc.time()[3] # ...used to start time delay!
-            pb <- txtProgressBar(style = 2, char = ".")
+            pb <- utils::txtProgressBar(style = 2, char = ".")
             while (status == "OFF") {
-                setTxtProgressBar(pb, tdelta / maxlag)
+                utils::setTxtProgressBar(pb, tdelta / maxlag)
                 tdelta <- proc.time()[3] - t0
                 if (tdelta > maxlag) {
                     status <- "OFFON"
@@ -146,7 +143,7 @@ setMethod(
     }
 )
 .checkJavaVersion <- function() {
-    msg <- packageVersion("RedeR")
+    msg <- utils::packageVersion("RedeR")
     msg <- paste0("RedeR_", msg,
         " will need Java Runtime Environment (Java >=11)")
     message(msg)
@@ -563,15 +560,15 @@ setMethod(
         sep = ""))
     header <- c(header, "Connection: Keep-Alive\n\n")
     header <- paste(c(header, datatosend, "\n"), collapse = "")
-    fp <- make.socket(host = host, port = port, server = FALSE)
-    write.socket(fp, header)
+    fp <- utils::make.socket(host = host, port = port, server = FALSE)
+    utils::write.socket(fp, header)
     output <- character(0)
     repeat{
-        ss <- read.socket(fp, maxlen = 65536L, loop = FALSE)
+        ss <- utils::read.socket(fp, maxlen = 65536L, loop = FALSE)
         if (ss == "") break
         output <- paste(output, ss)
     }
-    close.socket(fp)
+    utils::close.socket(fp)
     output <- strsplit(output, "<\\?xml.*?\\?>", perl = TRUE)[[1]][2]
     output <- gsub("<methodResponse.*?>", "<methodResponse>", output)
     output <- gsub("\\s", "", output)

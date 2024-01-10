@@ -95,8 +95,6 @@
 #'
 #' @name transform.attributes
 #' @importFrom igraph set_edge_attr
-#' @importFrom grDevices grey
-#' @importFrom stats quantile
 #' @aliases att.addv
 #' @export
 att.addv <- function(g, to, value, index = V(g), filter = NULL) {
@@ -279,16 +277,17 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
         cols <- c("darkblue", "blue", "orange", "cyan", "red", "darkred")
     }
     if (is.null(na.col)) {
-        na.col <- grey(0.7)
+        na.col <- "grey70"
     } else {
         na.col <- na.col[1]
     }
     if (isrev) cols <- rev(cols)
     # compute mapping
     x <- as.factor(x)
-    cols <- colorRampPalette(colors = cols)(nlevels(x))
+    cols <- grDevices::colorRampPalette(colors = cols)(nlevels(x))
     x.col <- cols[x]
-    x.col[is.na(x.col)] <- colorRampPalette(colors = c(na.col, na.col))(1)
+    x.col[is.na(x.col)] <- grDevices::colorRampPalette(colors = c(na.col, 
+        na.col))(1)
     leg <- list(scale = cols, legend = levels(x))
     res <- list(res = x.col, leg = leg)
     return(res)
@@ -300,7 +299,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     # check arg
     if (!is.null(nquant)) {
         if (nquant < 2) stop("require at least two quantiles!")
-        breaks <- quantile(x,
+        breaks <- stats::quantile(x,
             probs = seq(0, 1, length.out = nquant),
             na.rm = TRUE, names = FALSE
         )
@@ -312,7 +311,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
         cols <- c("darkblue", "blue", "orange", "cyan", "red", "darkred")
     }
     if (is.null(na.col)) {
-        na.col <- grey(0.7)
+        na.col <-"grey70"
     } else {
         na.col <- na.col[1]
     }
@@ -326,12 +325,12 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     # adjust breaks and get palette
     bkcenter <- (breaks[-length(breaks)] + breaks[-1]) / 2
     bkcenter <- c(-Inf, bkcenter, +Inf)
-    cols <- colorRampPalette(colors = cols)(length(bkcenter) - 1)
+    cols <- grDevices::colorRampPalette(colors = cols)(length(bkcenter) - 1)
     # set colors to x
     x.col <- rep(NA, length(x))
     cuts <- cut(x[!is.na(x)], breaks = bkcenter, include.lowest = TRUE)
     x.col[!is.na(x)] <- cols[as.integer(cuts)]
-    x.col[is.na(x.col)] <- colorRampPalette(colors = c(na.col, na.col))(1)
+    x.col[is.na(x.col)] <- grDevices::colorRampPalette(colors = c(na.col, na.col))(1)
     # get intervals
     if (is.null(nquant)) {
         interv <- levels(cuts)
@@ -349,7 +348,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     # check args
     if (!is.null(nquant)) {
         if (nquant < 2) stop("require at least two quantiles!")
-        breaks <- quantile(x,
+        breaks <- stats::quantile(x,
             probs = seq(0, 1, length.out = nquant),
             na.rm = TRUE, names = FALSE
         )
@@ -359,7 +358,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     }
     if (is.null(cols)) cols <- c("darkblue", "white", "darkred")
     if (is.null(na.col)) {
-        na.col <- grey(0.7)
+        na.col <- "grey70"
     } else {
         na.col <- na.col[1]
     }
@@ -374,11 +373,11 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     # check color vec
     lt <- length(cols)
     if (lt / 2 == as.integer(lt / 2)) lt <- lt + 1
-    cols <- colorRampPalette(colors = cols)(lt)
+    cols <- grDevices::colorRampPalette(colors = cols)(lt)
     lfrt <- as.integer(lt / 2) + 1
     # get neg/pos colors
     negCols <- cols[seq_len(lfrt)]
-    posCols <- cols[c(lfrt:lt)]
+    posCols <- cols[seq(lfrt, lt)]
     ct.col <- cols[lfrt]
     # check and adjust breaks
     lt <- length(bkcenter)
@@ -387,20 +386,21 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
         rt <- (lt / 2) + 1
         center <- (bkcenter[lf] + bkcenter[rt]) / 2
         negBreaks <- c(-Inf, bkcenter[seq_len(lf)], center)
-        posBreaks <- c(center, bkcenter[c(rt:lt)], +Inf)
+        posBreaks <- c(center, bkcenter[seq(rt, lt)], +Inf)
     } else {
         lfrt <- as.integer(lt / 2) + 1
         center <- bkcenter[lfrt]
         negBreaks <- c(-Inf, bkcenter[seq_len(lfrt)])
-        posBreaks <- c(bkcenter[c(lfrt:lt)], +Inf)
+        posBreaks <- c(bkcenter[seq(lfrt, lt)], +Inf)
     }
     # set main palettes
-    negCols <- colorRampPalette(colors = negCols)(
+    negCols <- grDevices::colorRampPalette(colors = negCols)(
         length(negBreaks))[-length(negBreaks)]
-    posCols <- colorRampPalette(colors = posCols)(length(posBreaks))[-1]
+    posCols <- grDevices::colorRampPalette(colors = 
+            posCols)(length(posBreaks))[-1]
     # set minor palettesscale
-    na.col <- colorRampPalette(colors = c(na.col, na.col))(1)
-    ct.col <- colorRampPalette(colors = c(ct.col, ct.col))(1)
+    na.col <- grDevices::colorRampPalette(colors = c(na.col, na.col))(1)
+    ct.col <- grDevices::colorRampPalette(colors = c(ct.col, ct.col))(1)
     # set colors to x
     x.col <- rep(NA, length(x))
     idx <- x < center & !is.na(x)
@@ -450,7 +450,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
         if (nquant < 2) {
             stop("require at least two quantiles!")
         }
-        breaks <- quantile(x,
+        breaks <- stats::quantile(x,
             probs = seq(0, 1, length.out = nquant),
             na.rm = TRUE, names = FALSE
         )

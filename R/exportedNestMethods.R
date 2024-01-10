@@ -218,18 +218,18 @@ setMethod(
         }
         # Nest color
         if (!is.null(gatt$nestColor)) {
-            charAtt[4] <- colorRampPalette(gatt$nestColor[1], alpha = TRUE)(1)
+            charAtt[4] <- grDevices::colorRampPalette(gatt$nestColor[1], alpha = TRUE)(1)
             if (verbose) message("...nest 'color'")
         }
         # Nest line color
         if (!is.null(gatt$nestLineColor)) {
-            charAtt[5] <- colorRampPalette(gatt$nestLineColor[1], 
+            charAtt[5] <- grDevices::colorRampPalette(gatt$nestLineColor[1], 
               alpha = TRUE)(1)
             if (verbose) message("...nest 'line color'")
         }
         # Nest font color
         if (!is.null(gatt$nestLabelColor)) {
-            charAtt[6] <- colorRampPalette(gatt$nestLabelColor[1], 
+            charAtt[6] <- grDevices::colorRampPalette(gatt$nestLabelColor[1], 
               alpha = TRUE)(1)
             if (verbose) message("...nest 'label color'")
         }

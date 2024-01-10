@@ -1,6 +1,6 @@
 .onAttach <- function(libname = find.package("RedeR"),
   pkgname = "RedeR"){
-  version <- packageVersion("RedeR")
+  version <- utils::packageVersion("RedeR")
   msg <- paste("***This is RedeR ",version,"! ",
   "For a quick start, type vignette('RedeR').\n",sep="")
   packageStartupMessage(msg, appendLF = FALSE)

@@ -33,6 +33,9 @@
     )
     if (is_igraph(x)) {
         res <- .check.legend.igraph(x, type, title)
+        if(is.null(res)){
+          return(invisible())
+        }
         x <- res$x
         title <- res$title
     }
@@ -70,6 +73,9 @@
 
 #-------------------------------------------------------------------------------
 .check.legend.igraph <- function(x, lgtype, lgtitle) {
+    xvals <- NULL
+    xlabs <- NULL
+    xtitle <- NULL
     if (lgtype == "nodecolor") {
         if (!is.null(.G(x, "legNodeColor")$scale)) {
             xvals <- .G(x, "legNodeColor")$scale
@@ -107,12 +113,16 @@
             xtitle <- .G(x, "legEdgeType")$title
         }
     }
-    if (is.null(xtitle)) xtitle <- lgtitle
-    if (is.null(xlabs) || length(xlabs) != length(xvals)) {
+    if(is.null(xvals)){
+      return(xvals)
+    } else {
+      if (is.null(xtitle)) xtitle <- lgtitle
+      if (is.null(xlabs) || length(xlabs) != length(xvals)) {
         xlabs <- as.character(xvals)
+      }
+      names(xvals) <- xlabs
+      return(list(x = xvals, title = xtitle))
     }
-    names(xvals) <- xlabs
-    return(list(x = xvals, title = xtitle))
 }
 
 #-------------------------------------------------------------------------------
@@ -158,7 +168,7 @@
     } else {
         labvec <- names(colvec)
     }
-    colvec <- colorRampPalette(colvec, alpha = TRUE)(length(colvec))
+    colvec <- grDevices::colorRampPalette(colvec, alpha = TRUE)(length(colvec))
     # set boxbend from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
@@ -201,7 +211,7 @@
     } else {
         labvec <- names(colvec)
     }
-    colvec <- colorRampPalette(colvec, alpha = TRUE)(length(colvec))
+    colvec <- grDevices::colorRampPalette(colvec, alpha = TRUE)(length(colvec))
     # set boxbend from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
@@ -247,7 +257,7 @@
     }
     # set cols
     cols <- rep(col, length(sizevec))
-    cols <- colorRampPalette(cols, alpha = TRUE)(length(cols))
+    cols <- grDevices::colorRampPalette(cols, alpha = TRUE)(length(cols))
     # set spacing from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
@@ -284,7 +294,7 @@
     }
     # set cols
     cols <- rep(col, length(sizevec))
-    cols <- colorRampPalette(cols, alpha = TRUE)(length(cols))
+    cols <- grDevices::colorRampPalette(cols, alpha = TRUE)(length(cols))
     # set spacing from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
@@ -322,7 +332,7 @@
     }
     # set cols
     cols <- rep(col, length(shapevec))
-    cols <- colorRampPalette(cols, alpha = TRUE)(length(cols))
+    cols <- grDevices::colorRampPalette(cols, alpha = TRUE)(length(cols))
     # set spacing from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
@@ -359,7 +369,7 @@
     }
     # set cols
     cols <- rep(col, length(shapevec))
-    cols <- colorRampPalette(cols, alpha = TRUE)(length(cols))
+    cols <- grDevices::colorRampPalette(cols, alpha = TRUE)(length(cols))
     # set spacing from stretch arg
     if (stretch < 0 || stretch > 1) {
         warning("'stretch' arg should be in [0,1]", call. = FALSE)
