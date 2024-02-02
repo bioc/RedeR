@@ -67,7 +67,7 @@
             "duplicated names.")
         stop(msg, call. = FALSE)
     }
-    if (!is.simple(g)) {
+    if (!is_simple(g)) {
         if (verbose && any_loop(g)) message("** Removing loops...")
         if (verbose && any_multiple(g))
             message("** Merging duplicated edges...")
@@ -106,7 +106,7 @@
 
 #-------------------------------------------------------------------------------
 .validate.edges <- function(g) {
-    atts <- .get.default.eatt(is.directed(g))
+    atts <- .get.default.eatt(is_directed(g))
     a_names <- names(atts)
     b_names <- a_names[a_names %in% edge_attr_names(g)]
     if (ecount(g) > 0) {
@@ -145,7 +145,7 @@
             g <- delete_graph_attr(g, name = at)
         }
     }
-    if (is.directed(g)) {
+    if (is_directed(g)) {
         g <- .transform.directed.graph(g)
     }
     return(g)
@@ -433,7 +433,7 @@
 .transform.arrowtype <- function(g) {
     if (ecount(g) > 0 && "arrowType" %in% names(edge_attr(g))) {
         eatt <- E(g)$arrowType
-        gtype <- is.directed(g)
+        gtype <- is_directed(g)
         aty <- .get.arrowtypes(gtype)
         if (.all_integerValues(eatt)) {
             idx <- !eatt %in% aty
@@ -520,8 +520,8 @@
     if (ecount(g) > 0) {
         E(g)$emode <- 1
         E(g)$emode[which_mutual(g)] <- 3
-        e <- emode <- as_adjacency_matrix(g, sparse = FALSE,
-            attr = "emode")
+        # e <- emode <- as_adjacency_matrix(g, sparse=FALSE, attr="emode")
+        e <- emode <- .adjacency(g, attr = "emode")
         g <- delete_edge_attr(g, "emode")
         bl <- lower.tri(emode) & emode == 3
         emode[bl] <- 0
@@ -605,7 +605,8 @@
     return(edges)
 }
 .extract.directed.att <- function(g) {
-    e <- as_adjacency_matrix(g, sparse = FALSE)
+    # e <- as_adjacency_matrix(g, sparse = FALSE)
+    e <- .adjacency(g)
     atts <- arrayInd(seq_len(prod(dim(e))), dim(e), useNames = TRUE)
     atts <- as.data.frame(atts)
     colnames(atts) <- c("vertex1", "vertex2")
@@ -613,7 +614,8 @@
     a_names <- edge_attr_names(g)
     ne <- e == 0
     for (at in a_names) {
-        x <- as_adjacency_matrix(g, sparse = FALSE, attr = at)
+        # x <- as_adjacency_matrix(g, sparse = FALSE, attr = at)
+        x <- .adjacency(g, attr = at)
         x[ne] <- NA
         if (is.numeric(x)) {
             atts[[at]] <- as.numeric(x)
@@ -624,6 +626,28 @@
     rownames(atts) <- NULL
     atts <- atts[, c("vertex1", "vertex2", a_names)]
     return(atts)
+}
+# ..this is a fix for 'as_adjacency_matrix', when 'attr' is character
+.adjacency <- function(graph, attr = NULL) {
+  if(is.null(attr)){
+    exattr <- rep(1, ecount(graph))
+  } else {
+    exattr <- edge_attr(graph, as.character(attr))
+  }
+  if (is.logical(exattr)) {
+    res <- matrix(FALSE, nrow = vcount(graph), ncol = vcount(graph))
+  } else if (is.numeric(exattr)) {
+    res <- matrix(0, nrow = vcount(graph), ncol = vcount(graph))
+  } else {
+    res <- matrix(NA, nrow = vcount(graph), ncol = vcount(graph))
+  }
+  e <- igraph::ends(graph, seq_len(ecount(graph)), names = FALSE)
+  res[e] <- exattr
+  if (!is_directed(graph)) {
+    res[e[,c(2,1)]] <- exattr
+  }
+  colnames(res) <- rownames(res) <- V(graph)$name
+  return(res)
 }
 
 ################################################################################

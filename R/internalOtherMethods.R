@@ -129,8 +129,12 @@
     if (!is_igraph(g)) {
         stop("'g' object should be an igraph object!")
     }
+    # g <- .update_reder_att(g)
+    # g <- .validate.igraph(g, layout=NULL, verbose=FALSE)
     .validate.args("singleLogical", "delNodes", delNodes)
     .validate.args("singleLogical", "delEdges", delEdges)
+    if (is.null(V(g)$x)) V(g)$x <- 0
+    if (is.null(V(g)$y)) V(g)$y <- 0
     gcls <- class(g)
     invisible(.rederpost(obj, "RedHandler.stopRelax"))
     invisible(.rederpost(obj, "RedHandler.lockDragAndZoom"))
@@ -153,14 +157,14 @@
         }
         V(g)$name <- as.character(seq_len(vcount(g)))
         V(gg)$name <- as.character(seq_len(vcount(gg)))
-        tp1 <- "vertices in the 'g' object are not named.\n"
-        tp2 <- "It will be used the vertices numbering as IDs."
-        warning(tp1, tp2)
+        tp1 <- "vertices in 'g' are not named; "
+        tp2 <- "it will be used vertex numbers as IDs."
+        warning(tp1, tp2, call. = FALSE)
     }
     if (sum(V(g)$name %in% V(gg)$name) == 0) {
         tp1 <- "No vertices in 'g' seem to match "
         tp2 <- "vertices in the ReadeR interface."
-        warning(tp1, tp2)
+        warning(tp1, tp2, call. = FALSE)
     }
     #--- intersect vertices
     nodes <- intersect(V(g)$name, V(gg)$name)
@@ -178,8 +182,6 @@
     gg <- .normalize.g(gg)
     #--- update coords
     message("Updating 'x' and 'y' coordinates...")
-    if (is.null(V(g)$x)) V(g)$x <- 0
-    if (is.null(V(g)$y)) V(g)$y <- 0
     idx <- match(V(gg)$name, V(g)$name)
     V(g)$x[idx] <- V(gg)$x
     V(g)$y[idx] <- V(gg)$y

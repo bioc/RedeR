@@ -52,7 +52,7 @@ Genome Biology 13:R29, 2012.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://genomebiology.com/2012/13/4/R29}
+  \item \doi{10.1186/gb-2012-13-4-r29}
 }
 
 }

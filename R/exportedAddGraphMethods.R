@@ -37,14 +37,14 @@
 #'
 #' @import methods
 #' @importFrom igraph degree vcount ecount which_mutual
-#' @importFrom igraph as_edgelist as_adjacency_matrix is.simple
-#' @importFrom igraph simplify V E 'V<-' 'E<-' is.directed vertex_attr
+#' @importFrom igraph as_edgelist as_adjacency_matrix is_simple
+#' @importFrom igraph simplify V E 'V<-' 'E<-' is_directed vertex_attr
 #' @importFrom igraph layout_nicely as.undirected delete_edge_attr
 #' @importFrom igraph vertex_attr_names edge_attr edge_attr_names
 #' @importFrom igraph delete_vertex_attr 'edge_attr<-' any_loop
 #' @importFrom igraph delete_edges delete_vertices any_multiple
 #' @importFrom igraph graph_attr_names graph_attr add_vertices norm_coords
-#' @importFrom igraph 'graph_attr<-' 'vertex_attr<-'
+#' @importFrom igraph ends 'graph_attr<-' 'vertex_attr<-'
 #' @docType methods
 #' @rdname addGraph-methods
 #' @aliases addGraph
