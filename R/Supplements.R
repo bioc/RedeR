@@ -1,4 +1,42 @@
 #-------------------------------------------------------------------------------
+warning_launch <- function(ms0){
+  version <- utils::packageVersion("RedeR")
+  ms1 <- paste(ms0, "is part of a new launch pipeline introduced")
+  ms2 <- "in RedeR version 3 or later. However, you are currently"
+  ms3 <- paste0("using RedeR ", version,".")
+  ms4 <- "To take advantage of this new feature"
+  ms5 <- "please update to the latest version of RedeR, available on"
+  ms6 <- "Bioconductor >=3.19 for R >=4.4.0."
+  ms <- paste(ms1, ms2, ms3, ms4, ms5, ms6)
+  return(ms)
+}
+startRedeR <- function(...){
+  ms <- warning_launch("'startRedeR()'")
+  warning(ms, call. = FALSE)
+}
+addGraphToRedeR <- function(...){
+  ms <- warning_launch("'addGraphToRedeR()'")
+  warning(ms, call. = FALSE)
+}
+resetRedeR <- function(...){
+  ms <- warning_launch("'resetRedeR()'")
+  warning(ms, call. = FALSE)
+}
+getGraphFromRedeR <- function(...){
+  ms <- warning_launch("'getGraphFromRedeR()'")
+  warning(ms, call. = FALSE)
+}
+relaxRedeR <- function(...){
+  ms <- warning_launch("'relaxRedeR()'")
+  warning(ms, call. = FALSE)
+}
+addLegendToRedeR <- function(...){
+  ms <- warning_launch("'addLegendToRedeR()'")
+  warning(ms, call. = FALSE)
+}
+
+
+#-------------------------------------------------------------------------------
 # Simple function to generate random graphs with a modular structure
 gtoy.rm <- function(
     m = 5, nmax = 30, nmin = 5, p1 = 0.5, p2 = 0.03, p3 = 0.7,

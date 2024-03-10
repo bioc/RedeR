@@ -65,7 +65,14 @@ export(
   att.mape,
   subg,
   cea,
-  .rederpost
+  .rederpost,
+  
+  startRedeR,
+  addGraphToRedeR,
+  resetRedeR,
+  getGraphFromRedeR,
+  relaxRedeR,
+  addLegendToRedeR
   )
 
 import(methods)
