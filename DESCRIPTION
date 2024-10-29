@@ -1,7 +1,7 @@
 Package: RedeR
 Type: Package
 Title: Interactive visualization and manipulation of nested networks
-Version: 3.2.0
+Version: 3.3.0
 Authors@R: 
     c(person("Xin", "Wang", role = "ctb"),
       person("Florian", "Markowetz", role = "ctb"),
