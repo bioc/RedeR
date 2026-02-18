@@ -42,6 +42,61 @@ RedPort <- function(title = 'default', host = '127.0.0.1',
 }
 
 #-------------------------------------------------------------------------------
+#' @title  RedeR Attribute Information
+#'
+#' @description
+#' Retrieves information on graph-, vertex-, and edge-level attributes recognized
+#' by the RedeR application, including usage descriptions and/or value
+#' specifications.
+#' 
+#' @param what Character string specifying which attribute fields to return.
+#' @return
+#' Either display info summary or a  named list with three elements:
+#' \describe{
+#'   \item{Graph}{Data frame of graph-level attributes.}
+#'   \item{Vertex}{Data frame of vertex-level attributes.}
+#'   \item{Edge}{Data frame of edge-level attributes.}
+#' }
+#' 
+#' @author Sysbiolab.
+#' @examples
+#' ## List usage information
+#' rederInfo("Usage")
+#' 
+#' ## List value information
+#' rederInfo("Value")
+#' 
+#' ## List both usage and value information
+#' rederInfo("All")
+#' 
+#' @name rederInfo
+#' @aliases rederInfo
+#' @export
+rederInfo <- function(what = c("Usage", "Value", "All")){
+    
+    what <- match.arg(what)
+    
+    if(what=="All"){
+        out <- list(
+            GraphAttr = .getGraphAttr(), 
+            VertexAttr = .getVertexAttr(),
+            EdgeAttr = .getEdgeAttr()
+        )
+        return(out)
+    } else {
+        g <- .getGraphAttr()
+        v <- .getVertexAttr()
+        e <- .getEdgeAttr()
+        g$Type <- "Graph"
+        v$Type <- "Vertex"
+        e$Type <- "Edge"
+        info <- rbind(g, v, e)
+        info <- info[, c("Type", "Attribute", what), drop = FALSE]
+        print.data.frame(info)
+    }
+}
+
+#-------------------------------------------------------------------------------
 #' @title Call RedeR app from R
 #'
 #' @description Method to launch RedeR application from R.
@@ -359,19 +414,19 @@ setMethod(
         "Node bend",
         "Node weight (not implemented)")
     col3 <- c(
-    "Character vector (unique IDs)",
-    "Numeric vector in (-Inf, Inf)",
-    "Numeric vector in (-Inf, Inf)",
-    "'ELLIPSE', 'RECTANGLE', 'ROUNDED_RECTANGLE', 'TRIANGLE', 'DIAMOND'",
-    "Numeric vector >=0",
+    "Character, unique IDs",
+    "Numeric in (-Inf, Inf)",
+    "Numeric in (-Inf, Inf)",
+    "Character: 'ELLIPSE', 'RECTANGLE', 'ROUNDED_RECTANGLE', 'TRIANGLE', 'DIAMOND'",
+    "Numeric >=0",
     "Hexadecimal or color name",
-    "Numeric vector >=0",
+    "Numeric >=0",
     "Hexadecimal or color name",
-    "Character vector",
-    "Numeric vector >=0",
+    "Character",
+    "Numeric >=0",
     "Hexadecimal or color name",
-    "Numeric vector in [0,100]",
-    "Numeric vector >=0")
+    "Numeric in [0,100]",
+    "Numeric >=0")
     col4 <- c(
         "V(g)$name <- paste0('Node',1:vcount(g))",
         "V(g)$x <- runif(vcount(g))",
@@ -406,16 +461,16 @@ setMethod(
         "Arrowhead angle in degrees",
         "Edge weight")
     col3 <- paste(
-        "Integer vector: 0 (A-B), 1 (A-> B), -1 (A-| B), 2 (A <-B),",
-        "-2 (A |-B), 3 (A <-> B), -3 (A |-| B), 4 (A |-> B), -4 (A <-| B)")
+        "Integer: 0 (A-B), 1 (->), -1 (-|), 2 (<-), -2 (|-),",
+        "3 (<->), -3 (|-|), 4 (|->), -4 (<-|)")
     col3 <- c(
-        "'SOLID', 'DOTTED', 'DASHED', 'LONG_DASH'",
-        "Numeric vector >=0",
+        "Character: 'SOLID', 'DOTTED', 'DASHED', 'LONG_DASH'",
+        "Numeric >=0",
         "Hexadecimal or color name",
-        "Integer vector: -1, 0, 1", col3,
-        "Numeric vector >=0",
-        "Numeric vector in [10, 90]",
-        "Numeric vector >=0")
+        "Integer: -1, 0, 1", col3,
+        "Numeric >=0",
+        "Numeric in [10, 90]",
+        "Numeric >=0")
     col4 <- c(
         "E(g)$edgeLineType <- 'SOLID'",
         "E(g)$edgeLineWidth <- 1",
@@ -436,9 +491,9 @@ setMethod(
         "nestLineType", "nestLineWidth", "nestLineColor",
         "nestLabel", "nestLabelSize", "nestLabelColor", "nestLabelCoords")
     col2 <- c(
-        "Background color of the app panel",
-        "Graph expansion factor in the app panel",
-        "Zoom scale applied to the app panel",
+        "Background color",
+        "Graph expansion factor",
+        "Zoom scale",
         "Container shapes",
         "Container size",
         "Container color",
@@ -451,15 +506,19 @@ setMethod(
         "Label xy-coord, relative to container"
     )
     col3 <- c(
-    "Single color, hexadecimal or name", "Single number in [0, 100]", 
-    "Single number in [0, 100]",
-    "'ELLIPSE', 'RECTANGLE', 'ROUNDED_RECTANGLE', 'TRIANGLE', 'DIAMOND'",
-    "Single number >=0", "Single color, hexadecimal or name",
-    "'SOLID', 'DOTTED', 'DASHED', 'LONG_DASH'",
-    "Single number >=0", "Single color, hexadecimal or name",
-    "Single string", "Single number >=0",
-    "Single color, hexadecimal or name",
-    "Numeric vector with two numbers")
+        "Single color, hexadecimal or name", 
+        "Single number in [0, 100]", 
+        "Single number in [0, 100]",
+        "Single string: 'ELLIPSE', 'RECTANGLE', 'ROUNDED_RECTANGLE', 'TRIANGLE', 'DIAMOND'",
+        "Single number >=0", 
+        "Single color, hexadecimal or name",
+        "Single string: 'SOLID', 'DOTTED', 'DASHED', 'LONG_DASH'",
+        "Single number >=0", 
+        "Single color, hexadecimal or name",
+        "Single string", 
+        "Single number >=0",
+        "Single color, hexadecimal or name",
+        "Numeric vector with two numbers")
     col4 <- c(
         "g$bgcolor <- 'white'", "g$gscale <- 75", "g$zoom <- 100",
         "g$nestShape <- 'ELLIPSE'", "g$nestSize <- 500", 

@@ -11,7 +11,7 @@
 #' 'igraph' object.
 #'
 #' The 'att.setv' and 'att.sete' functions rename attributes available in
-#' the an 'igraph' object, transforming them into new attribute classes
+#' the 'igraph' object, transforming them into new attribute classes
 #' (for example, numeric values into colors or sizes).
 #'
 #' @param g An 'igraph' object.
@@ -137,6 +137,10 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     if (!is.null(nquant)) .validate.args("numeric_vec", "nquant", nquant)
     .validate.args("singleLogical", "isrev", isrev)
     to <- .validate.old.args("att.setv", to)
+    if(missing(g)){
+        .print.values.setv()
+        return(invisible())
+    }
     if (!is_igraph(g)) stop("Not an igraph object!")
     fromatt <- vertex_attr(g, from)
     if (is.null(fromatt)) {
@@ -498,8 +502,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
 #' @name transform.attributes
 #' @aliases att.sete
 #' @export
-att.sete <- function(
-    g, from = "name", to = "edgeColor", pal = 1,
+att.sete <- function(g, from = "name", to = "edgeColor", pal = 1,
     cols = NULL, na.col = "grey70", xlim = c(20, 100, 1), breaks = NULL,
     nquant = NULL, title = from, digits = 1, isrev = FALSE) {
     .validate.args("singleString", "from", from)
@@ -514,6 +517,10 @@ att.sete <- function(
     if (!is.null(breaks)) .validate.args("numeric_vec", "breaks", breaks)
     if (!is.null(nquant)) .validate.args("numeric_vec", "nquant", nquant)
     .validate.args("singleLogical", "isrev", isrev)
+    if(missing(g)){
+        .print.values.sete()
+        return(invisible())
+    }
     if (!is_igraph(g)) stop("Not an igraph object!")
     fromatt <- edge_attr(g, from)
     if (is.null(fromatt)) {

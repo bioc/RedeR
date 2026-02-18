@@ -1,14 +1,12 @@
 #-------------------------------------------------------------------------------
-.addLegend <- function(obj, x, type = "nodecolor", position = "default",
-    orientation = "default", title = type, font.size = 12,
-    stretch = 0.1) {
+.addLegend <- function(obj, x, type, position, orientation, title, font.size,
+    stretch, is_title_missing) {
     if (ping(obj) == 0) {
         return(invisible())
     }
     #--- validate args
     .validate.args("singleString", "type", type)
     .validate.args("singleString", "position", position)
-    force(title)
     .validate.args("singleString", "title", title)
     .validate.args("singleNumber", "font.size", font.size)
     .validate.args("singleNumber", "stretch", stretch)
@@ -37,7 +35,7 @@
           return(invisible())
         }
         x <- res$x
-        title <- res$title
+        title <- ifelse(is_title_missing, res$title, title)
     }
     #--- get addLegend funs
     if (type == "nodecolor") {

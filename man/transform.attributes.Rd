@@ -107,7 +107,7 @@ The 'att.mapv' and 'att.mape' functions map data frames to an
 'igraph' object.
 
 The 'att.setv' and 'att.sete' functions rename attributes available in
-the an 'igraph' object, transforming them into new attribute classes
+the 'igraph' object, transforming them into new attribute classes
 (for example, numeric values into colors or sizes).
 }
 \examples{
