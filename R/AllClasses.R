@@ -40,11 +40,7 @@ setValidity("RedPort",
     })
 
 ##definitions of class unions
-##setClassUnion("matrix_Or_numeric_Or_NULL", c("matrix", "numeric", "NULL"))
-setClassUnion("matrix_Or_missing", c("matrix", "missing"))
 setClassUnion("logical_Or_missing", c("logical", "missing"))
-##definitions of class unions
-##setClassUnion("matrix_Or_numeric_Or_NULL", c("matrix", "numeric", "NULL"))
 setClassUnion("matrix_Or_missing", c("matrix", "missing"))
 setClassUnion("numeric_Or_missing", c("numeric", "missing"))
 setClassUnion("list_Or_missing", c("list", "missing"))

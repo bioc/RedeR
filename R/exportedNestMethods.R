@@ -18,19 +18,19 @@
 #' @param theme Some pre-defined graph attributes. Options: 'th0', 'th1',
 #' 'th2', and 'th3'.
 #' @param gatt
-#' \itemize{
-#' A list with container attributes (see details).
-#' \item{\code{nestShape}}{ A single string.}
-#' \item{\code{nestSize}}{ A single number >=0.}
-#' \item{\code{nestColor}}{ A single color name or hexadecimal code.}
-#' \item{\code{nestLabel}}{ A single string.}
-#' \item{\code{nestLabelSize}}{ A single number >=0.}
-#' \item{\code{nestLabelColor}}{ A single color name or hexadecimal code.}
-#' \item{\code{nestLabelCoords}}{ A numeric vector with two numbers
+#' List of container attributes (see details).
+#' \describe{
+#' \item{\code{nestShape}}{A single string.}
+#' \item{\code{nestSize}}{A single number >=0.}
+#' \item{\code{nestColor}}{A single color name or hexadecimal code.}
+#' \item{\code{nestLabel}}{A single string.}
+#' \item{\code{nestLabelSize}}{A single number >=0.}
+#' \item{\code{nestLabelColor}}{A single color name or hexadecimal code.}
+#' \item{\code{nestLabelCoords}}{A numeric vector with two numbers
 #' (e.g. c(x=0, y=0)).}
-#' \item{\code{nestLineType}}{ A single string.}
-#' \item{\code{nestLineWidth}}{ A single number >=0.}
-#' \item{\code{nestLineColor}}{ A single color name or hexadecimal code.}
+#' \item{\code{nestLineType}}{A single string.}
+#' \item{\code{nestLineWidth}}{A single number >=0.}
+#' \item{\code{nestLineColor}}{A single color name or hexadecimal code.}
 #' }
 #' @param parent Optional argument, a nest ID of a parent nest.
 #' It must be used with 'isAssign=TRUE'.
