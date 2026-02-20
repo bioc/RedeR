@@ -2,6 +2,12 @@
 \title{RedeR News}
 \encoding{UTF-8}
 
+\section{Version 3.6.0}{
+  \itemize{
+    \item Regular maintenance, stable release.
+  }
+}
+
 \section{Version 3.0.0}{
   \itemize{
     \item Major code refactoring.
