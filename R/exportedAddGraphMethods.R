@@ -228,7 +228,7 @@ setMethod(
         # Get/set edges attributes (if available)
         edgeWeight <- E(g)$edgeWeight
         edgeLineWidth <- E(g)$edgeLineWidth
-        edgeLineColor <- E(g)$edgeLineColor
+        edgeColor <- E(g)$edgeColor %||% E(g)$edgeLineColor
         edgeLineType <- E(g)$edgeLineType
         arrowType <- E(g)$arrowType
         arrowLength <- E(g)$arrowLength
@@ -242,7 +242,7 @@ setMethod(
         if (nrow(edges) == 1) {
             edges <- rbind(edges, edges)
             if (!is.null(edgeLineWidth)) edgeLineWidth <- c(edgeLineWidth, -1)
-            if (!is.null(edgeLineColor)) edgeLineColor <- c(edgeLineColor, "")
+            if (!is.null(edgeColor)) edgeColor <- c(edgeColor, "")
             if (!is.null(edgeLineType)) edgeLineType <- c(edgeLineType, "")
             if (!is.null(arrowType)) arrowType <- c(arrowType, -10)
             if (!is.null(arrowLength)) arrowLength <- c(arrowLength, -1)
@@ -256,12 +256,12 @@ setMethod(
         } else {
             if (verbose) message("...edge 'line width'")
         }
-        # edgeLineColor
-        if (anyNA(edgeLineColor)) {
-            edgeLineColor <- character(2)
+        # edgeColor
+        if (anyNA(edgeColor)) {
+            edgeColor <- character(2)
         } else {
-            edgeLineColor <- grDevices::colorRampPalette(edgeLineColor,
-                alpha = TRUE)(length(edgeLineColor))
+            edgeColor <- grDevices::colorRampPalette(edgeColor,
+                alpha = TRUE)(length(edgeColor))
             if (verbose) message("...edge 'line color'")
         }
         # edgeLineType
@@ -302,7 +302,7 @@ setMethod(
         charsuppl <- c("default", ifelse(update.coord, "true", "false"))
         if (ecount(g) > 0) {
             refid <- .rederexpresspost(obj, "RedHandler.updateGraphMap",
-                edges[, 1], edges[, 2], edgeLineWidth, edgeLineColor,
+                edges[, 1], edges[, 2], edgeLineWidth, edgeColor,
                 edgeLineType, edgeWeight, arrowType, arrowLength, arrowAngle,
                 nodes, coordX, coordY, nodeBend, nodeSize, nodeShape,
                 nodeColor, nodeWeight, nodeLineWidth, nodeLineColor,

@@ -9,8 +9,8 @@
         para <- ifelse(para == "nodeFontColor", "nodeLabelColor", para)
     }
     if (name == "att.sete") {
+        para <- ifelse(para == "edgeLineColor", "edgeColor", para)
         para <- ifelse(para == "edgeType", "edgeLineType", para)
-        para <- ifelse(para == "edgeColor", "edgeLineColor", para)
         para <- ifelse(para == "arrowDirection", "arrowType", para)
         para <- ifelse(para == "edgeWidth", "edgeLineWidth", para)
     }

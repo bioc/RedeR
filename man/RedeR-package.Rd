@@ -53,11 +53,17 @@ Genome Biology 13:R29, 2012.
 Useful links:
 \itemize{
   \item \doi{10.1186/gb-2012-13-4-r29}
+  \item Report bugs at \url{https://github.com/sysbiolab/RedeR/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Mauro Castro \email{mauro.a.castro@gmail.com} (\href{https://orcid.org/0000-0003-4942-8131}{ORCID})
+
+Authors:
+\itemize{
+  \item Mauro Castro \email{mauro.a.castro@gmail.com} (\href{https://orcid.org/0000-0003-4942-8131}{ORCID})
+}
 
 Other contributors:
 \itemize{

@@ -86,7 +86,7 @@
     .rederpost(obj, "RedHandler.getEdgeWidth", type, status)
 }
 #-------------------------------------------------------------------------------
-.getEdgeLineColor <- function(obj, status = "all", type = "node") {
+.getEdgeColor <- function(obj, status = "all", type = "node") {
     .rederpost(obj, "RedHandler.getEdgeColor", type, status)
 }
 #-------------------------------------------------------------------------------

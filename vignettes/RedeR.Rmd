@@ -171,7 +171,7 @@ V(g1)$nodeLineColor <- "skyblue"
 V(g1)$nodeSize <- 50
 
 #--- Set new edge attributes in 'g1'
-E(g1)$edgeLineColor <- "skyblue"
+E(g1)$edgeColor <- "skyblue"
 E(g1)$edgeLineWidth <- 10
 ``` 
 
@@ -194,7 +194,7 @@ rederInfo()
 ```{r table1, eval=TRUE, echo=FALSE}
 attribs <- rederInfo("All")
 attribs$GraphAttr$Usage <- gsub("$","\\$",attribs$GraphAttr$Usage, fixed=TRUE)
-colnames(attribs$GraphAttr)[1] <- "RedeR attribute"
+colnames(attribs$GraphAttr)[1] <- "Attribute"
 colnames(attribs$GraphAttr)[4] <- "Usage example"
 knitr::kable(attribs$GraphAttr, format="html", valign='t', linesep='', label="tab1", 
              table.attr = "style='width:100%;'",
@@ -207,7 +207,7 @@ knitr::kable(attribs$GraphAttr, format="html", valign='t', linesep='', label="ta
 ```{r table2, eval=TRUE, echo=FALSE}
 attribs <- rederInfo("All")
 attribs$VertexAttr$Usage <- gsub("$","\\$",attribs$VertexAttr$Usage, fixed=TRUE)
-colnames(attribs$VertexAttr)[1] <- "RedeR attribute"
+colnames(attribs$VertexAttr)[1] <- "Attribute"
 colnames(attribs$VertexAttr)[4] <- "Usage example"
 knitr::kable(attribs$VertexAttr, format="html", valign = 't',linesep='', label="tab2", 
              table.attr = "style='width:100%;'",
@@ -220,7 +220,7 @@ knitr::kable(attribs$VertexAttr, format="html", valign = 't',linesep='', label="
 ```{r table3, eval=TRUE, echo=FALSE}
 attribs <- rederInfo("All")
 attribs$EdgeAttr$Usage <- gsub("$","\\$",attribs$EdgeAttr$Usage, fixed=TRUE)
-colnames(attribs$EdgeAttr)[1] <- "RedeR attribute"
+colnames(attribs$EdgeAttr)[1] <- "Attribute"
 colnames(attribs$EdgeAttr)[4] <- "Usage example"
 knitr::kable(attribs$EdgeAttr, format="html", valign = 't',linesep='', label="tab3", 
              table.attr = "style='width:100%;'",
@@ -454,7 +454,7 @@ tal <- att.setv(tal, from="Petal.Width", to="nodeSize", nquant=6, xlim=c(5,50,1)
 
 #--- Set other attributes using igraph shortcuts
 V(tal)$nodeLabel <- ""
-E(tal)$edgeLineColor <- "grey70"
+E(tal)$edgeColor <- "grey70"
 ``` 
 
 ```{r label='Workflow 3: Send the tal graph to RedeR', eval=TRUE}

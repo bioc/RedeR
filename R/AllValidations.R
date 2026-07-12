@@ -14,7 +14,7 @@
     return(atts)
 }
 .get.default.eatt <- function(is.directed = FALSE) {
-    atts <- list("edgeLineWidth" = NA, "edgeLineColor" = NA,
+    atts <- list("edgeLineWidth" = NA, "edgeColor" = NA,
         "edgeLineType" = NA, "edgeWeight" = NA,
         "arrowLength" = NA, "arrowAngle" = NA)
     if (is.directed) {
@@ -320,8 +320,8 @@
                 call. = FALSE)
         }
     }
-    if (!is.null(atts[["edgeLineColor"]])) {
-        .validate.colors("allColors", "edgeLineColor", atts[["edgeLineColor"]])
+    if (!is.null(atts[["edgeColor"]])) {
+        .validate.colors("allColors", "edgeColor", atts[["edgeColor"]])
     }
     if (!is.null(atts[["edgeLineType"]])) {
         .validate.args("allCharacterOrInteger", "edgeLineType",
@@ -666,6 +666,9 @@
     }
     if ("nestSize" %in% graph_attr_names(g)) {
         graph_attr(g, name = "nestSize") <- g$nestSize * uc
+    }
+    if ("nodeLabelSize" %in% vertex_attr_names(g)) {
+      vertex_attr(g, name = "nodeLabelSize") <- V(g)$nodeLabelSize * uc
     }
     if ("edgeLineWidth" %in% edge_attr_names(g)) {
         edge_attr(g, name = "edgeLineWidth") <- E(g)$edgeLineWidth * uc
