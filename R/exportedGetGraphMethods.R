@@ -110,9 +110,9 @@ setMethod(
                   value = nodes$nodeLineColor)
                 g <- set_vertex_attr(g, "nodeWeight", value = nodes$nodeWeight)
             } else {
+                edges$edgeColor <- .getEdgeColor(obj, status, type)
                 edges$edgeLineType <- .getEdgeLineType(obj, status, type)
                 edges$edgeLineWidth <- .getEdgeLineWidth(obj, status, type)
-                edges$edgeLineColor <- .getEdgeLineColor(obj, status, type)
                 edges$arrowType <- .getArrowDirection(obj, status, type)
                 edges$arrowLength <- .getArrowLength(obj, status, type)
                 edges$arrowAngle <- .getArrowAngle(obj, status, type)

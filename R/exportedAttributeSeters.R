@@ -260,7 +260,7 @@ att.setv <- function(g, from = "name", to = "nodeColor", pal = 1,
     print(cbind(Attribute = defaultatt, Value = description), quote = FALSE)
 }
 .print.values.sete <- function() {
-    coltype <- c("edgeLineColor")
+    coltype <- c("edgeColor")
     numtype <- c("edgeLineWidth", "edgeWeight", "arrowLength", "arrowAngle")
     defaultatt <- c(coltype, numtype, "arrowType", "edgeLineType")
     d1 <- "Hexadecimal or color name"
@@ -528,7 +528,7 @@ att.sete <- function(g, from = "name", to = "edgeColor", pal = 1,
         stop(msg)
     }
     # set att
-    coltype <- c("edgeLineColor")
+    coltype <- c("edgeColor")
     numtype <- c("edgeLineWidth", "edgeWeight", "arrowLength", "arrowAngle")
     defaultatt <- c(coltype, numtype, "arrowType", "edgeLineType")
     if (!to %in% defaultatt) {

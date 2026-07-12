@@ -447,14 +447,14 @@ setMethod(
 }
 .getEdgeAttr <- function() {
     col1 <- c(
-        "edgeLineType", "edgeLineWidth", "edgeLineColor",
+        "edgeLineType", "edgeLineWidth", "edgeColor",
         "arrowType", "arrowType",
         "arrowLength", "arrowAngle",
         "edgeWeight")
     col2 <- c(
         "Line types",
         "Line width",
-        "Line color",
+        "Edge color",
         "Arrows in directed graphs",
         "Arrows in undirected graphs",
         "Arrow length",
@@ -474,7 +474,7 @@ setMethod(
     col4 <- c(
         "E(g)$edgeLineType <- 'SOLID'",
         "E(g)$edgeLineWidth <- 1",
-        "E(g)$edgeLineColor <- 'grey'",
+        "E(g)$edgeColor <- 'grey'",
         "E(g)$arrowType <- 1",
         "E(g)$arrowType <- 0",
         "E(g)$arrowLength <- 15",
